@@ -1,0 +1,45 @@
+---
+import CourseLayout from '../../layouts/CourseLayout.astro';
+import BlockRenderer from '../../components/BlockRenderer.astro';
+import { courseTitle, lessons } from '../../data/course.js';
+
+export function getStaticPaths() {
+  return lessons.map((lesson) => ({ params: { id: lesson.id }, props: { lesson } }));
+}
+
+const { lesson } = Astro.props;
+const index = lessons.findIndex((item) => item.id === lesson.id);
+const previous = lessons[index - 1];
+const next = lessons[index + 1];
+const bannerImage = `/images/banners/lesson-${lesson.number}.jpg`;
+const bannerPositions = {
+  0: 'center 48%',
+  1: 'center 46%',
+  2: 'center 45%',
+  3: 'center 62%',
+  4: 'center 48%',
+  5: 'center 64%',
+  6: 'center 46%',
+  7: 'center 45%',
+};
+const bannerPosition = bannerPositions[lesson.number] ?? 'center center';
+---
+<CourseLayout title={`${lesson.title} | ${courseTitle}`} currentId={lesson.id} bannerImage={bannerImage} bannerPosition={bannerPosition}>
+  <Fragment slot="hero">
+    <p class="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-tfgRed">Lesson {lesson.number}</p>
+    <h1 class="mt-3 max-w-3xl text-4xl font-black leading-tight md:text-5xl">{lesson.title}</h1>
+    <p class="mt-4 max-w-3xl text-lg leading-8 text-white/75">{lesson.objective}</p>
+  </Fragment>
+  <article class="mx-auto max-w-5xl space-y-6 px-5 py-8 lg:px-10">
+    {lesson.blocks.map((block, blockIndex) => <BlockRenderer block={block} index={blockIndex} />)}
+    <section class="course-block p-6 md:p-8">
+      <div class="flex flex-wrap gap-3">
+        {previous && <a class="focus-ring rounded border border-black/10 bg-white px-4 py-3 font-bold text-graphite hover:border-tfgRed" href={`/lessons/${previous.id}`}>Previous lesson</a>}
+        {next ? <a class="focus-ring rounded bg-ink px-4 py-3 font-bold text-white hover:bg-tfgRed" href={`/lessons/${next.id}`} data-complete-and-go={lesson.id}>Next lesson</a> : <a class="focus-ring rounded bg-ink px-4 py-3 font-bold text-white hover:bg-tfgRed" href="/" data-complete-and-go={lesson.id}>Finish course</a>}
+      </div>
+    </section>
+  </article>
+  <script define:vars={{ ids: lessons.map((item) => item.id) }}>
+    document.documentElement.dataset.lessonIds = JSON.stringify(ids);
+  </script>
+</CourseLayout>

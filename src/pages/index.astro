@@ -1,0 +1,47 @@
+---
+import CourseLayout from '../layouts/CourseLayout.astro';
+import { courseOverview, courseTitle, lessons } from '../data/course.js';
+---
+<CourseLayout title={courseTitle} bannerImage="/images/banners/landing.jpg" bannerPosition="center 42%">
+  <Fragment slot="hero">
+    <h1 class="mt-4 max-w-3xl text-4xl font-black leading-tight md:text-6xl">{courseTitle}</h1>
+    <p class="mt-4 max-w-2xl text-lg leading-8 text-white/75">A practical guide for responding to possible misconduct with facts, fairness and the right level of support.</p>
+  </Fragment>
+  <section class="mx-auto max-w-5xl px-5 py-8 lg:px-10">
+    <div>
+      <article class="course-block p-7 md:p-10">
+        <p class="text-xs font-bold uppercase tracking-[0.22em] text-tfgRed">Landing Page</p>
+        <h2 class="mt-3 text-3xl font-black">Course Overview</h2>
+        <div class="overview-grid mt-8 grid gap-6 md:grid-cols-2">
+          {courseOverview.map((item) => (
+            <div class="tone-chip p-6">
+              <p class="text-sm font-black uppercase tracking-[0.14em] text-tfgRed">{item[0]}</p>
+              <p class="mt-3 text-base leading-7 text-graphite">{item[1]}</p>
+            </div>
+          ))}
+        </div>
+        <a href={`/lessons/${lessons[0].id}`} class="focus-ring mt-8 inline-flex rounded bg-tfgRed px-5 py-3 font-bold text-white hover:bg-foschini">Start course</a>
+      </article>
+    </div>
+    <div class="mt-8">
+      <h2 class="text-2xl font-black">Lessons</h2>
+      <div class="mt-4 grid gap-4">
+      {lessons.map((lesson) => (
+        <a href={`/lessons/${lesson.id}`} class="course-block block p-5 transition hover:-translate-y-0.5 hover:border-tfgRed">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-bold uppercase tracking-[0.18em] text-tfgRed">Lesson {lesson.number}</p>
+              <h3 class="mt-1 text-xl font-black">{lesson.title}</h3>
+              <p class="mt-2 max-w-3xl text-sm leading-6 text-graphite">{lesson.objective}</p>
+            </div>
+            <span class="rounded bg-ink px-4 py-2 text-sm font-bold text-white">Open</span>
+          </div>
+        </a>
+      ))}
+      </div>
+    </div>
+  </section>
+  <script define:vars={{ ids: lessons.map((lesson) => lesson.id) }}>
+    document.documentElement.dataset.lessonIds = JSON.stringify(ids);
+  </script>
+</CourseLayout>

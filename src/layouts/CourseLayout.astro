@@ -1,0 +1,167 @@
+---
+import '../styles/global.css';
+import { BookOpen, Circle, Home, Menu } from 'lucide-astro';
+import { courseTitle, lessons } from '../data/course.js';
+
+const { title = courseTitle, currentId = '', bannerImage = '/images/banners/landing.jpg', bannerPosition = 'center center' } = Astro.props;
+const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="min-h-screen lg:grid lg:grid-cols-[320px_1fr]">
+      <aside class="border-b border-black/10 bg-white/95 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
+        <div class="flex items-center justify-between px-5 py-4 lg:block lg:px-6 lg:py-7">
+          <a href="/" class="flex items-center gap-3">
+            <span class="grid h-11 w-11 place-items-center rounded bg-ink text-sm font-black text-white">TFG</span>
+            <span>
+              <span class="block max-w-48 text-sm font-semibold leading-tight text-ink">{courseTitle}</span>
+            </span>
+          </a>
+          <button class="focus-ring rounded p-2 lg:hidden" data-menu-toggle aria-label="Toggle lesson menu">
+            <Menu size={22} />
+          </button>
+        </div>
+        <div class="hidden px-5 pb-5 lg:block lg:px-6" data-menu>
+          <div class="course-block p-4">
+            <div class="mb-3 flex items-center justify-between text-sm">
+              <span class="font-semibold text-graphite">Course Progress</span>
+              <span class="font-bold text-tfgRed" data-progress-label>0%</span>
+            </div>
+            <div class="h-2 overflow-hidden rounded-full bg-mist">
+              <div class="h-full w-0 rounded-full bg-tfgRed transition-all" data-progress-bar></div>
+            </div>
+            <div class="mt-4 grid grid-cols-2 gap-2 text-xs text-graphite">
+              <span><strong data-complete-count>0</strong> completed</span>
+              <span>{lessons.length} lessons</span>
+            </div>
+          </div>
+          <nav class="mt-5 space-y-2" aria-label="Lessons">
+            <a href="/" class={`focus-ring flex items-center gap-3 rounded px-3 py-3 text-sm font-semibold ${currentId === '' ? 'bg-ink text-white' : 'text-graphite hover:bg-white'}`}>
+              <Home size={18} /> Landing Page
+            </a>
+            {lessons.map((lesson, index) => (
+              <a href={`/lessons/${lesson.id}`} class={`focus-ring group flex items-start gap-3 rounded px-3 py-3 text-sm ${lesson.id === currentId ? 'bg-ink text-white' : 'text-graphite hover:bg-white'}`} data-lesson-link={lesson.id}>
+                <span class="mt-0.5 text-tfgRed group-[.bg-ink]:text-white" data-nav-icon={lesson.id}><Circle size={18} /></span>
+                <span>
+                  <span class="block text-xs font-bold uppercase">Lesson {lesson.number}</span>
+                  <span class="block font-semibold leading-snug">{lesson.title}</span>
+                </span>
+              </a>
+            ))}
+          </nav>
+        </div>
+      </aside>
+      <main>
+        <header class="relative overflow-hidden border-b border-black/10 bg-ink text-white">
+          <img class="absolute inset-0 h-full w-full object-cover" src={bannerImage} alt="" loading="eager" style={`object-position: ${bannerPosition};`} />
+          <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/78 to-ink/30"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent"></div>
+          <div class="relative mx-auto max-w-5xl px-5 py-14 lg:px-10 lg:py-20">
+            <div class="flex flex-wrap items-center gap-3 text-sm text-white/80">
+              <BookOpen size={18} />
+              <span>Employee Relations</span>
+              {currentIndex >= 0 && <span>Lesson {lessons[currentIndex].number} of 7</span>}
+            </div>
+            <slot name="hero" />
+          </div>
+        </header>
+        <slot />
+      </main>
+    </div>
+    <script>
+      const key = 'er-abridge-progress';
+      const lessonIds = JSON.parse(document.documentElement.dataset.lessonIds || '[]');
+
+      function readProgress() {
+        try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; }
+      }
+
+      function writeProgress(progress) {
+        localStorage.setItem(key, JSON.stringify(progress));
+        renderProgress();
+      }
+
+      function renderProgress() {
+        const progress = readProgress();
+        const done = lessonIds.filter((id) => progress[id]?.complete).length;
+        const pct = lessonIds.length ? Math.round((done / lessonIds.length) * 100) : 0;
+        document.querySelectorAll('[data-progress-label]').forEach((el) => el.textContent = `${pct}%`);
+        document.querySelectorAll('[data-progress-bar]').forEach((el) => el.style.width = `${pct}%`);
+        document.querySelectorAll('[data-complete-count]').forEach((el) => el.textContent = done);
+        document.querySelectorAll('[data-nav-icon]').forEach((el) => {
+          const id = el.getAttribute('data-nav-icon');
+          el.innerHTML = progress[id]?.complete ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.8 10.6a10 10 0 1 1-5.4-7.4"/><path d="m9 11 3 3L22 4"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>';
+        });
+      }
+
+      document.querySelector('[data-menu-toggle]')?.addEventListener('click', () => {
+        document.querySelector('[data-menu]')?.classList.toggle('hidden');
+      });
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const option = target.closest('[data-option]');
+        if (option) {
+          const group = option.closest('[data-interaction]');
+          const multi = group?.getAttribute('data-multi') === 'true';
+          if (!multi) group?.querySelectorAll('[data-option]').forEach((el) => el.classList.remove('border-tfgRed', 'bg-red-50'));
+          option.classList.toggle('border-tfgRed');
+          option.classList.toggle('bg-red-50');
+        }
+        const check = target.closest('[data-check]');
+        if (check) {
+          const group = check.closest('[data-interaction]');
+          const correct = JSON.parse(group?.getAttribute('data-correct') || '[]');
+          const selected = [...group.querySelectorAll('[data-option].border-tfgRed')].map((el) => el.getAttribute('data-value'));
+          const ok = correct.length === selected.length && correct.every((item) => selected.includes(item));
+          group.querySelectorAll('[data-option]').forEach((el) => {
+            const value = el.getAttribute('data-value');
+            el.classList.remove('border-green-700', 'bg-green-50', 'border-tfgRed', 'bg-red-50');
+            if (correct.includes(value)) {
+              el.classList.add('border-green-700', 'bg-green-50');
+            } else if (selected.includes(value)) {
+              el.classList.add('border-tfgRed', 'bg-red-50');
+            }
+          });
+          const feedback = group.querySelector('[data-feedback]');
+          feedback.classList.remove('hidden');
+          feedback.querySelector('[data-result]').textContent = ok ? 'Correct' : 'Good try';
+          feedback.querySelector('[data-feedback-copy]').textContent = ok ? group.getAttribute('data-full-feedback') : 'Please try again.';
+          feedback.classList.toggle('border-green-700', ok);
+          feedback.classList.toggle('border-tfgRed', !ok);
+        }
+        const matchCheck = target.closest('[data-match-check]');
+        if (matchCheck) {
+          const group = matchCheck.closest('[data-matching]');
+          let allCorrect = true;
+          group.querySelectorAll('[data-match-row]').forEach((row) => {
+            const select = row.querySelector('select');
+            const correct = row.getAttribute('data-answer');
+            const ok = select.value === correct;
+            row.classList.toggle('border-green-700', ok);
+            row.classList.toggle('border-tfgRed', !ok);
+            if (!ok) allCorrect = false;
+          });
+          const feedback = group.querySelector('[data-match-feedback]');
+          feedback.classList.remove('hidden');
+          feedback.textContent = allCorrect ? 'Correct. Each scenario has been matched to the right pathway.' : 'Good try, try again.';
+        }
+        const completionLink = target.closest('[data-complete-and-go]');
+        if (completionLink) {
+          const id = completionLink.getAttribute('data-complete-and-go');
+          const progress = readProgress();
+          progress[id] = { complete: true, completedAt: new Date().toISOString() };
+          writeProgress(progress);
+        }
+      });
+      renderProgress();
+    </script>
+  </body>
+</html>

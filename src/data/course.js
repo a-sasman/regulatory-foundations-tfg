@@ -1,0 +1,135 @@
+export const courseTitle = 'ER Abridged: What To Do When Misconduct Happens';
+
+export const resources = [
+  { label: 'Employee Relations Glossary', href: '/resources/Employee Relations Glossary.pdf' },
+  { label: 'TFG Disciplinary Policy', href: '/resources/TFGHR_RSA DISCIPLINARY POLICY_AUGUST 2023.pdf' },
+  { label: 'Code of Ethical Conduct', href: '/resources/TFGHR CODE OF ETHICAL CONDUCT.pdf' },
+  { label: 'Fuse support process', href: '/resources/How to Contact the Fuse.pdf' },
+  { label: 'ER Decision Checklist', href: '/resources/ER Decision Checklist.pdf' },
+];
+
+export const courseOverview = [
+  ['Purpose', 'Build manager confidence when workplace conduct concerns arise.'],
+  ['Approach', 'Use a practical decision process instead of memorising every policy clause.'],
+  ['Practice', 'Work through scenarios, knowledge checks, accordions, matching activities and reflections.'],
+  ['Outcome', 'Know when to gather facts, apply fairness, choose a response and involve the Fuse.'],
+];
+
+export const lessons = [
+  {
+    id: 'before-we-begin',
+    number: 0,
+    title: 'Before We Begin: Why This Course Matters',
+    objective: 'Set the context for fair, confident and consistent manager decisions.',
+    blocks: [
+      { type: 'statement', eyebrow: 'Manager capability', title: 'Every manager faces difficult decisions', copy: ['Sooner or later, every manager encounters a situation where they need to respond to workplace conduct.', 'It may involve a workplace rule being broken, a complaint being raised, inappropriate behaviour, honesty concerns, a challenge to a decision or suspected misconduct.', 'When these situations happen, managers are expected to respond fairly, confidently and consistently.'] },
+      { type: 'cards', title: 'Misconduct can show up in different ways', cards: [['Workplace behaviour', 'An employee behaves in a way that does not meet expected standards.'], ['Attendance or timekeeping', 'An employee does not follow working time, attendance or reporting expectations.'], ['Honesty or trust', 'Information, records or conduct raises concerns about honesty.'], ['Respect and conduct', 'A workplace interaction, comment or action creates concern.']] },
+      { type: 'quote', copy: 'Employee Relations is not only an HR responsibility. It is a manager capability.', detail: 'Managers play an important role in maintaining workplace standards, identifying possible misconduct and taking appropriate action.' },
+      { type: 'text', title: 'Why this matters', copy: ['The decisions managers make during workplace conduct matters can affect employees, teams, culture, business performance and trust in leadership.', 'Responding too quickly can lead to unfair outcomes. Responding too slowly can allow problems to continue.', 'Discipline is not about punishment. It is about correcting behaviour, maintaining standards and applying workplace rules consistently.'] },
+      { type: 'accordion', title: 'Questions managers often ask', items: [['Has a rule actually been broken?', 'Before taking action, managers need to understand what happened and whether a workplace rule, policy or expected standard may have been breached.'], ['What information do I need?', 'Managers should gather enough information to understand the situation before deciding what action may be appropriate.'], ['Would discipline be fair?', 'Managers need to consider both the process followed and the reason for taking disciplinary action.'], ['Should I issue a warning?', 'Warnings formally record the concern and support corrective action.'], ['When should I involve the Fuse?', 'Escalate when a final written warning may be required, dismissal is possible, a shop steward is involved, or you are uncertain.']] },
+      { type: 'reflection', title: 'Quick reflection', question: 'Which of these questions have you faced, or could imagine facing, as a manager?', options: ['Has a rule been broken?', 'What action should I take?', 'Is a warning appropriate?', 'Should I escalate this matter?', 'Am I being fair?', 'I have not always been sure what to do'], feedback: 'There are no right or wrong answers here. This course helps you work through these questions using a simple decision-making process.' },
+      { type: 'process', title: 'The decision process you will use', intro: 'Use this process when misconduct may have occurred.', steps: [['Understand what happened', 'Gather the facts before deciding what action to take.'], ['Identify the rule or duty', 'Check whether a workplace rule, policy, Code of Ethical Conduct principle or common law duty may have been breached.'], ['Check fairness', 'Consider whether the process and reason for possible discipline would be fair.'], ['Decide the appropriate response', 'Determine whether a corrective conversation, warning, disciplinary discussion or escalation is required.'], ['Escalate when required', 'Contact the Fuse when specialist support may be needed.']] },
+      { type: 'resources', title: 'Useful resources' },
+    ],
+  },
+  {
+    id: 'incident-happened',
+    number: 1,
+    title: 'An Incident Has Happened. What Should You Do?',
+    objective: 'Identify the first appropriate response when misconduct may have occurred.',
+    blocks: [
+      { type: 'scenario', title: "Something Doesn't Look Right...", copy: ['You manage a team. One morning, a colleague sends you a screenshot of a social media post made by one of your employees.', 'The post contains negative comments about the company and its leadership. Several colleagues have already seen it.', 'Your manager says: "This is unacceptable. Can we issue a warning immediately?"'] },
+      { type: 'quiz', title: 'What should you do first?', options: ['Issue a warning immediately.', 'Contact the Fuse immediately.', 'Gather the facts before deciding what action may be appropriate.', "Accept the employee's explanation and take no further action."], correct: ['Gather the facts before deciding what action may be appropriate.'], feedback: 'Good managers do not jump straight to discipline. They check accuracy, context, available information and whether the employee has had an opportunity to explain.' },
+      { type: 'text', title: 'Why This Matters', copy: ['When misconduct is suspected, managers often feel pressure to act quickly.', 'The goal is not to react. The goal is to make an informed and fair decision.'] },
+      { type: 'process', title: 'A Simple Decision Process', steps: [['Understand what happened', 'Gather facts before deciding what action to take.'], ['Identify the rule or duty', 'Determine which workplace expectation may be involved.'], ['Check fairness', 'Ensure the decision is fair and reasonable.'], ['Decide the response', 'Determine the most appropriate action.'], ['Escalate when required', 'Know when Fuse support is needed.']] },
+      { type: 'accordion', title: 'What could go wrong?', items: [['Jumping straight to discipline', 'Making assumptions without gathering information can lead to unfair outcomes.'], ['Ignoring the issue', 'Failing to act can allow inappropriate behaviour to continue.'], ['Not following a process', 'Inconsistent decisions can undermine trust and fairness.']] },
+    ],
+  },
+  {
+    id: 'rule-or-duty',
+    number: 2,
+    title: 'Has a Rule or Duty Been Breached?',
+    objective: 'Identify which workplace rule, standard or common law duty may have been breached.',
+    blocks: [
+      { type: 'scenario', title: "Let's return to our situation", copy: ['Before deciding what action may be appropriate, ask yourself: Has a workplace expectation actually been breached?', 'Managers should avoid relying on personal opinion and consider workplace rules, standards and expectations.'] },
+      { type: 'quiz', title: 'Which statement best reflects a fair approach?', options: ['If I disagree with the post, discipline should follow.', 'If somebody complains, discipline is required.', 'I need to determine whether a workplace rule, standard or duty may have been breached.', 'All negative comments automatically result in discipline.'], correct: ['I need to determine whether a workplace rule, standard or duty may have been breached.'], feedback: 'The first step is to determine whether a workplace expectation may have been breached and gather the facts required to understand the situation.' },
+      { type: 'cards', title: 'The Six Common Law Duties', cards: [['Provide a Service', 'Attend work and perform duties during working hours.'], ['Be Respectful', 'Follow reasonable instructions and treat others respectfully.'], ['Be Honest', 'Act honestly and with integrity.'], ['Be Diligent', 'Work carefully and follow required processes.'], ['Demonstrate Acceptable Conduct', 'Follow workplace rules, values and behavioural expectations.'], ['Act in Good Faith', "Act in the employer's best interests and avoid conduct that may affect reputation."]] },
+      { type: 'quiz', title: 'Which Common Law Duty may be most relevant to negative social media comments?', options: ['Provide a Service', 'Be Respectful', 'Be Honest', 'Be Diligent', 'Demonstrate Acceptable Conduct', 'Act in Good Faith'], correct: ['Act in Good Faith'], feedback: "This does not automatically mean misconduct has occurred. It helps identify which duty may need further investigation." },
+      { type: 'matching', title: 'Which Duty Fits Best?', pairs: [['An employee repeatedly arrives late without permission.', 'Provide a Service'], ['An employee submits a medical certificate that has been altered.', 'Be Honest'], ['An employee refuses to follow a reasonable instruction.', 'Be Respectful'], ['An employee makes negative comments about the company online.', 'Act in Good Faith']] },
+    ],
+  },
+  {
+    id: 'fair-discipline',
+    number: 3,
+    title: 'Would Discipline Be Fair?',
+    objective: 'Apply the five questions used to determine whether disciplinary action may be justified.',
+    blocks: [
+      { type: 'scenario', title: "Let's Investigate Further", copy: ['The employee confirms that they created the post. The post contains negative comments about the company and leadership.', 'Your manager asks: "Now that we know the employee posted it, can we issue a warning?"'] },
+      { type: 'statement', title: 'A Breach Does Not Automatically Mean Discipline', copy: ['Managers need to determine whether discipline would be fair and appropriate. A fair decision considers both the facts and the circumstances.'] },
+      { type: 'process', title: 'Five Questions Every Manager Should Ask', steps: [['Was there a reasonable rule?', 'What rule, standard or expectation may have been breached?'], ['Was the employee aware of the rule?', 'Could the employee reasonably be expected to know the rule?'], ['Did the employee break the rule?', 'What evidence is available and can the facts be verified?'], ['Was the rule applied consistently?', 'Would another employee be treated the same way?'], ['What is the appropriate response?', 'What impact did the behaviour have and can it be corrected?']] },
+      { type: 'accordion', title: 'Apply The Questions', items: [['Was there a reasonable rule?', 'Employees are expected to act in good faith and avoid conduct that may negatively affect the organisation.'], ['Was the employee aware?', 'Check communication of the Code of Ethical Conduct, policy or expected standard.'], ['Was the rule broken?', 'Verify evidence and facts.'], ['Was it applied consistently?', 'Compare with similar incidents.'], ['What response is appropriate?', 'Assess whether disciplinary action might be appropriate and reasonable.']] },
+      { type: 'quiz', title: 'Which statement best reflects a fair approach?', options: ['Once a rule is broken, discipline should automatically follow.', 'If enough people complain, a warning should be issued.', 'Managers should consider all available information before deciding whether disciplinary action is appropriate.', 'All policy breaches should result in the same outcome.'], correct: ['Managers should consider all available information before deciding whether disciplinary action is appropriate.'], feedback: 'Fair disciplinary decisions are based on facts, consistency and appropriate judgement, not assumptions.' },
+      { type: 'cards', title: 'So What Does "Fair" Mean?', cards: [['Procedural Fairness', 'Following a fair process when investigating and responding to an incident.'], ['Substantive Fairness', 'Having a valid and fair reason for taking disciplinary action.']] },
+    ],
+  },
+  {
+    id: 'action-should-follow',
+    number: 4,
+    title: 'What Action Should Follow?',
+    objective: 'Explain the purpose of discipline and identify how warnings support corrective action.',
+    blocks: [
+      { type: 'scenario', title: 'Back to Our Scenario', copy: ['You have gathered the facts, identified a possible Common Law Duty and worked through the fairness questions.', 'Before deciding what action to take, consider: What is the purpose of discipline?'] },
+      { type: 'quiz', title: 'Which statement best reflects the purpose of discipline?', options: ['To punish employees for mistakes.', 'To show management authority.', 'To correct behaviour and encourage improvement.', 'To remove employees who break rules.'], correct: ['To correct behaviour and encourage improvement.'], feedback: 'Discipline helps employees understand expectations, what needs to change and what may happen if behaviour continues.' },
+      { type: 'text', title: 'Discipline Is About Behaviour Change', copy: ['Good discipline helps employees understand expectations, recognise unacceptable behaviour, correct behaviour and improve future performance.'] },
+      { type: 'process', title: 'Understanding Progressive Discipline', steps: [['Corrective Conversation or Reprimand', 'Used to address minor issues and reinforce expectations.'], ['Verbal Warning', 'Typically used for less serious misconduct or first offences. Recorded in writing.'], ['Written Warning', 'Used when misconduct is more serious or behaviour has not improved.'], ['Final Written Warning', 'Used for very serious misconduct or when previous corrective action has not worked.'], ['Dismissal', 'May be considered where misconduct is sufficiently serious or progressive discipline has failed.']] },
+      { type: 'accordion', title: 'Types of Warnings', items: [['Verbal Warning', 'Typically issued for less serious misconduct or first offences.'], ['Written Warning', 'Used when misconduct is more serious or repeated.'], ['Final Written Warning', 'Used for very serious misconduct or where earlier action has not resulted in improvement.'], ['Comprehensive Final Written Warning', 'Used only in specific circumstances and generally requires support from the Fuse.']] },
+      { type: 'statement', title: 'Warnings Only Work When They Are Done Properly', copy: ['Follow the correct process, record details accurately, use the appropriate Common Law Duty, ensure the employee understands the concern and focus on improvement.'] },
+    ],
+  },
+  {
+    id: 'contact-fuse',
+    number: 5,
+    title: 'Can I Handle This, or Should I Contact the Fuse?',
+    objective: 'Identify when managers can act and when escalation to the Fuse is required.',
+    blocks: [
+      { type: 'scenario', title: 'Time To Decide', copy: ['You have gathered facts, identified a possible duty, considered fairness and decided action may be appropriate.', 'Managers are not expected to be ER experts. Knowing when to ask for help is an important skill.'] },
+      { type: 'statement', title: "You Don't Need To Solve Everything Alone", copy: ['Many workplace conduct matters can be addressed directly by managers. Some situations are more complex and require specialist guidance.'] },
+      { type: 'process', title: 'Choosing The Correct Path', steps: [['Minor Issue', 'A corrective conversation or reprimand may be appropriate.'], ['Warning May Be Appropriate', 'A disciplinary discussion is likely to be required before a warning can be issued.'], ['Serious Matter', 'Where dismissal may be possible, specialist support is required.']] },
+      { type: 'matching', title: 'Which Path Would You Follow?', pairs: [['An employee arrives late for work for the first time.', 'Minor Issue / Corrective Conversation'], ['An employee repeatedly ignores a reasonable instruction after coaching and previous discussions.', 'Warning May Be Appropriate'], ['An employee is suspected of serious dishonesty that could justify dismissal if proven.', 'Specialist Support Required']] },
+      { type: 'accordion', title: 'When Should You Contact the Fuse?', items: [['Dismissal May Be Possible', 'Matters that may lead to dismissal require specialist support.'], ['A Final Written Warning May Be Required', 'Managers should seek support before issuing a Final Written Warning.'], ['A Shop Steward Is Involved', 'Special processes and union consultation requirements may apply.'], ['You Are Unsure', 'When in doubt, ask for support before taking action.']] },
+      { type: 'quiz', title: "At this stage, what's the best next step?", options: ['Issue a Final Written Warning immediately.', 'Ignore the matter.', 'Follow the appropriate disciplinary process and seek support if required.', 'Dismiss the employee immediately.'], correct: ['Follow the appropriate disciplinary process and seek support if required.'], feedback: 'Managers should follow a fair process and seek specialist support where the seriousness of the matter requires it.' },
+      { type: 'process', title: 'Your Escalation Steps', intro: 'Before deciding what action to take, work through these steps in order.', steps: [['Gather the facts', 'Make sure you understand what happened before deciding on a response.'], ['Identify the possible duty or rule', 'Check which workplace expectation, policy, rule or Common Law Duty may be involved.'], ['Apply the fairness questions', 'Consider the five fairness questions before deciding whether disciplinary action may be appropriate.'], ['Consider the likely outcome', 'Think about whether the matter may involve a warning, final written warning, dismissal or another response.'], ['Check your authority', 'Be clear about whether this matter sits within your authority as a manager.'], ['Escalate when needed', 'Contact the Fuse if you are unsure or if specialist support may be required.']] },
+    ],
+  },
+  {
+    id: 'manager-challenge',
+    number: 6,
+    title: 'Manager Challenge',
+    objective: 'Apply the complete ER decision-making framework to a realistic workplace situation.',
+    blocks: [
+      { type: 'statement', title: 'Your Manager Challenge', copy: ["Now it's your turn. Read the situation and decide what you would do next. Use the same decision-making process you have used throughout the course."] },
+      { type: 'scenario', title: 'Medical Certificate Concern', copy: ['An employee submits a medical certificate after being absent from work. Part of the document appears to have been altered and the dates look different.', 'The employee says: "The doctor made the correction." A colleague believes the employee should be dismissed immediately.'] },
+      { type: 'quiz', title: 'What should you do first?', options: ['Dismiss the employee immediately.', 'Issue a Final Written Warning.', 'Gather information and investigate further.', 'Accept the explanation and take no further action.'], correct: ['Gather information and investigate further.'], feedback: 'A concern is not proof. Gather facts, review evidence and give the employee an opportunity to explain.' },
+      { type: 'quiz', title: 'Which Common Law Duty may be most relevant?', options: ['Provide a Service', 'Be Honest', 'Be Diligent', 'Be Respectful'], correct: ['Be Honest'], feedback: 'A possibly altered document raises questions about honesty and integrity.' },
+      { type: 'quiz', multi: true, title: 'Before deciding on disciplinary action, which questions should the manager consider?', options: ['Was there a reasonable rule?', 'Was the employee aware of the rule?', 'Did the employee break the rule?', 'Was the rule applied consistently?', 'What is the appropriate response?', 'Did somebody complain?'], correct: ['Was there a reasonable rule?', 'Was the employee aware of the rule?', 'Did the employee break the rule?', 'Was the rule applied consistently?', 'What is the appropriate response?'], feedback: 'These five questions form your fairness framework and focus on facts, fairness and consistency.' },
+      { type: 'quiz', title: 'If dismissal may be a possible outcome, what should the manager do?', options: ['Handle the matter independently.', 'Issue a warning immediately.', 'Seek support from the Fuse and follow the appropriate process.', 'Ignore the issue until it happens again.'], correct: ['Seek support from the Fuse and follow the appropriate process.'], feedback: 'Strong managers know when to seek support. Asking for guidance is good judgement.' },
+      { type: 'process', title: 'How a Good Manager Approached the Situation', steps: [['Gathered facts before acting', 'No assumptions.'], ['Identified the workplace expectation involved', 'Be Honest.'], ['Applied the fairness questions', 'Facts and consistency first.'], ['Focused on behaviour correction', 'Discipline has a purpose.'], ['Sought support where required', 'Especially when dismissal may be possible.']] },
+      { type: 'reflectionText', title: 'What would you do differently now?', prompt: 'Think back to a real workplace situation you have experienced. How might you have approached it using the ER Decision Process?' },
+    ],
+  },
+  {
+    id: 'decision-checklist',
+    number: 7,
+    title: 'Your ER Decision Checklist',
+    objective: 'Recall and apply the ER decision-making process when responding to conduct matters.',
+    blocks: [
+      { type: 'statement', title: 'One Question To Remember', copy: ['An employee may have broken a rule. What should I do next?', 'The ER decision process will help you answer that question fairly, consistently and confidently.'] },
+      { type: 'process', title: 'Your ER Decision Process', steps: [['Understand What Happened', 'What happened? What facts do I know? What information am I missing? Have I spoken to the employee?'], ['Identify The Rule Or Duty', 'Which workplace expectation, policy, rule or Common Law Duty may be involved?'], ['Apply The Fairness Test', 'Was there a reasonable rule? Was the employee aware? Was it broken? Was it applied consistently? What response is appropriate?'], ['Decide The Appropriate Response', 'Is a corrective conversation appropriate? Is a warning being considered? What outcome is reasonable and proportionate?'], ['Escalate When Required', 'Contact the Fuse when dismissal may be possible, a Final Written Warning may be required, a Shop Steward is involved, or you are uncertain.']] },
+      { type: 'reflectionText', title: 'What Will You Do Differently?', prompt: 'How will using the ER Decision Process help you respond differently?' },
+      { type: 'checklist', title: 'What Good Managers Do', items: ['Gather facts before making decisions', 'Apply workplace standards consistently', 'Consider fairness before taking action', 'Focus on behaviour correction', 'Know when to seek support'] },
+      { type: 'download', title: 'Quick Reference Guide', copy: 'Download the ER Decision Checklist and keep it available for future conduct matters.', href: '/resources/ER Decision Checklist.pdf', label: 'Open ER Decision Checklist' },
+      { type: 'statement', title: 'Final Thought', copy: ['Employee Relations is not about catching people out. It is about helping managers make fair, informed decisions when workplace conduct concerns arise.', 'Gather the facts. Follow the process. Apply fairness. Focus on improvement. Seek support when needed.'] },
+      { type: 'statement', title: 'Congratulations', copy: ['You have completed ER Abridged: What To Do When Misconduct Happens.', 'You now have a practical framework to help you respond more confidently when workplace conduct matters arise.'] },
+    ],
+  },
+];
