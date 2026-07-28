@@ -4,13 +4,16 @@ import { resources } from '../data/course.js';
 
 const { block, index } = Astro.props;
 const iconClass = 'text-tfgRed';
+const titleClass = block.review ? 'text-red-700' : 'text-ink';
+const bodyClass = block.review ? 'text-red-700' : 'text-graphite';
+const reviewIconClass = block.review ? 'text-red-700' : iconClass;
 ---
 {block.type === 'statement' && (
   <section class="course-block overflow-hidden">
     <div class="border-l-4 border-tfgRed p-6 md:p-8">
-      {block.eyebrow && <p class="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-tfgRed">{block.eyebrow}</p>}
-      <h2 class="text-2xl font-black text-ink">{block.title}</h2>
-      <div class="mt-4 space-y-3 text-base leading-7 text-graphite">{block.copy.map((p) => <p>{p}</p>)}</div>
+      {block.eyebrow && <p class={`mb-3 text-xs font-bold uppercase tracking-[0.22em] ${block.review ? 'text-red-700' : 'text-tfgRed'}`}>{block.eyebrow}</p>}
+      <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
+      <div class={`mt-4 space-y-3 text-base leading-7 ${bodyClass}`}>{block.copy.map((p) => <p>{p}</p>)}</div>
     </div>
   </section>
 )}
@@ -18,18 +21,18 @@ const iconClass = 'text-tfgRed';
 {block.type === 'quote' && (
   <section class="course-block border-l-4 border-tfgRed bg-white p-7 text-ink md:p-9">
     <div class="flex items-center gap-3">
-      <MessageSquareQuote class={iconClass} size={34} />
-      <p class="text-xs font-bold uppercase tracking-[0.22em] text-tfgRed">Manager mindset</p>
+      <MessageSquareQuote class={reviewIconClass} size={34} />
+      <p class={`text-xs font-bold uppercase tracking-[0.22em] ${block.review ? 'text-red-700' : 'text-tfgRed'}`}>Manager mindset</p>
     </div>
-    <p class="mt-5 text-2xl font-black leading-tight text-ink">{block.copy}</p>
-    <p class="mt-4 max-w-3xl leading-7 text-graphite">{block.detail}</p>
+    <p class={`mt-5 text-2xl font-black leading-tight ${titleClass}`}>{block.copy}</p>
+    <p class={`mt-4 max-w-3xl leading-7 ${bodyClass}`}>{block.detail}</p>
   </section>
 )}
 
 {block.type === 'text' && (
   <section class="course-block p-6 md:p-8">
-    <h2 class="text-2xl font-black">{block.title}</h2>
-    <div class="mt-4 space-y-3 leading-7 text-graphite">{block.copy.map((p) => <p>{p}</p>)}</div>
+    <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
+    <div class={`mt-4 space-y-3 leading-7 ${bodyClass}`}>{block.copy.map((p) => <p>{p}</p>)}</div>
   </section>
 )}
 
@@ -42,21 +45,21 @@ const iconClass = 'text-tfgRed';
       </div>
       <p class="mt-3 text-white/75">Scenario</p>
     </div>
-    <div class="space-y-4 p-6 text-lg leading-8 text-graphite md:p-8">{block.copy.map((p) => <p>{p}</p>)}</div>
+    <div class={`space-y-4 p-6 text-lg leading-8 md:p-8 ${bodyClass}`}>{block.copy.map((p) => <p>{p}</p>)}</div>
   </section>
 )}
 
 {block.type === 'cards' && (
   <section class="course-block p-6 md:p-8">
     <div class="mb-5 flex items-center gap-3">
-      <Layers3 class={iconClass} size={26} />
-      <h2 class="text-2xl font-black">{block.title}</h2>
+      <Layers3 class={reviewIconClass} size={26} />
+      <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
     </div>
     <div class="tone-grid grid gap-4 sm:grid-cols-2">
       {block.cards.map((card) => (
         <article class="tone-chip p-5">
-          <h3 class="font-black text-ink">{card[0]}</h3>
-          <p class="mt-2 text-sm leading-6 text-graphite">{card[1]}</p>
+          <h3 class={`font-black ${titleClass}`}>{card[0]}</h3>
+          <p class={`mt-2 text-sm leading-6 ${bodyClass}`}>{card[1]}</p>
         </article>
       ))}
     </div>
@@ -66,18 +69,18 @@ const iconClass = 'text-tfgRed';
 {block.type === 'accordion' && (
   <section class="course-block p-6 md:p-8">
     <div class="flex items-center gap-3">
-      <ChevronDown class={iconClass} size={28} />
-      <h2 class="text-2xl font-black">{block.title}</h2>
+      <ChevronDown class={reviewIconClass} size={28} />
+      <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
     </div>
-    <p class="mt-3 text-sm font-semibold text-graphite">Select each row to expand and review the guidance.</p>
+    <p class={`mt-3 text-sm font-semibold ${bodyClass}`}>Select each row to expand and review the guidance.</p>
     <div class="mt-5 divide-y divide-black/10">
       {block.items.map((item) => (
         <details class="group py-4">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-ink">
+          <summary class={`flex cursor-pointer list-none items-center justify-between gap-4 font-bold ${titleClass}`}>
             <span>{item[0]}</span>
-            <ChevronDown class="shrink-0 text-tfgRed transition group-open:rotate-180" size={20} />
+            <ChevronDown class={`shrink-0 transition group-open:rotate-180 ${block.review ? 'text-red-700' : 'text-tfgRed'}`} size={20} />
           </summary>
-          <p class="mt-3 leading-7 text-graphite">{item[1]}</p>
+          <p class={`mt-3 leading-7 ${bodyClass}`}>{item[1]}</p>
         </details>
       ))}
     </div>
@@ -87,10 +90,10 @@ const iconClass = 'text-tfgRed';
 {block.type === 'process' && (
   <section class="course-block p-6 md:p-8">
     <div class="mb-6 flex items-center gap-3">
-      <Sparkles class={iconClass} size={26} />
+      <Sparkles class={reviewIconClass} size={26} />
       <div>
-        <h2 class="text-2xl font-black">{block.title}</h2>
-        {block.intro && <p class="mt-1 text-graphite">{block.intro}</p>}
+        <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
+        {block.intro && <p class={`mt-1 ${bodyClass}`}>{block.intro}</p>}
       </div>
     </div>
     <ol class="space-y-4">
@@ -98,8 +101,8 @@ const iconClass = 'text-tfgRed';
         <li class="grid gap-4 rounded border border-black/10 bg-white p-4 sm:grid-cols-[48px_1fr]">
           <span class="grid h-12 w-12 place-items-center rounded bg-ciGrey font-black text-white">{i + 1}</span>
           <span>
-            <span class="block font-black text-ink">{step[0]}</span>
-            <span class="mt-1 block leading-6 text-graphite">{step[1]}</span>
+            <span class={`block font-black ${titleClass}`}>{step[0]}</span>
+            <span class={`mt-1 block leading-6 ${bodyClass}`}>{step[1]}</span>
           </span>
         </li>
       ))}
@@ -108,58 +111,58 @@ const iconClass = 'text-tfgRed';
 )}
 
 {block.type === 'quiz' && (
-  <section class="course-block p-6 md:p-8" data-interaction data-multi={block.multi ? 'true' : 'false'} data-correct={JSON.stringify(block.correct)} data-full-feedback={block.feedback}>
+  <section class="course-block p-6 md:p-8" data-activity={block.review ? undefined : 'quiz'} data-interaction data-multi={block.multi ? 'true' : 'false'} data-correct={JSON.stringify(block.correct)} data-full-feedback={block.feedback}>
     <div class="flex items-center gap-3">
-      <CheckSquare class={iconClass} size={28} />
-      <h2 class="text-2xl font-black">{block.title}</h2>
+      <CheckSquare class={reviewIconClass} size={28} />
+      <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
     </div>
     <div class="mt-5 grid gap-3">
       {block.options.map((option) => (
-        <button class="focus-ring rounded border border-black/10 bg-white p-4 text-left font-semibold text-graphite hover:border-tfgRed" data-option data-value={option}>{option}</button>
+        <button class={`focus-ring rounded border border-black/10 bg-white p-4 text-left font-semibold hover:border-tfgRed ${bodyClass}`} data-option data-value={option}>{option}</button>
       ))}
     </div>
     <button class="focus-ring mt-5 rounded bg-ink px-5 py-3 font-bold text-white hover:bg-tfgRed" data-check>Check answer</button>
     <div class="mt-5 hidden rounded border bg-white p-4" data-feedback>
       <p class="font-black" data-result></p>
-      <p class="mt-2 leading-7 text-graphite" data-feedback-copy></p>
+      <p class={`mt-2 leading-7 ${bodyClass}`} data-feedback-copy></p>
     </div>
   </section>
 )}
 
 {block.type === 'reflection' && (
-  <section class="course-block p-6 md:p-8">
-    <PenLine class={iconClass} size={28} />
-    <h2 class="mt-3 text-2xl font-black">{block.title}</h2>
-    <p class="mt-3 text-lg font-semibold text-graphite">{block.question}</p>
+  <section class="course-block p-6 md:p-8" data-activity={block.review ? undefined : 'reflection'}>
+    <PenLine class={reviewIconClass} size={28} />
+    <h2 class={`mt-3 text-2xl font-black ${titleClass}`}>{block.title}</h2>
+    <p class={`mt-3 text-lg font-semibold ${bodyClass}`}>{block.question}</p>
     <div class="mt-5 grid gap-3 sm:grid-cols-2">
-      {block.options.map((option) => <label class="rounded border border-black/10 bg-white p-4 text-sm font-semibold"><input class="mr-2 accent-tfgRed" type="checkbox" /> {option}</label>)}
+      {block.options.map((option) => <label class={`rounded border border-black/10 bg-white p-4 text-sm font-semibold ${bodyClass}`}><input class="mr-2 accent-tfgRed" type="checkbox" data-reflection-option /> {option}</label>)}
     </div>
-    <p class="mt-5 rounded bg-sage p-4 text-sm font-semibold text-graphite">{block.feedback}</p>
+    <p class={`mt-5 rounded bg-sage p-4 text-sm font-semibold ${bodyClass}`}>{block.feedback}</p>
   </section>
 )}
 
 {block.type === 'reflectionText' && (
-  <section class="course-block p-6 md:p-8">
-    <PenLine class={iconClass} size={28} />
-    <h2 class="mt-3 text-2xl font-black">{block.title}</h2>
-    <label class="mt-4 block text-graphite" for={`reflection-${index}`}>{block.prompt}</label>
-    <textarea id={`reflection-${index}`} rows="5" class="focus-ring mt-3 w-full rounded border border-black/10 bg-white p-4" placeholder="Type your reflection here..."></textarea>
-    <p class="mt-3 text-sm text-graphite">Your response is for personal reflection and will not be assessed.</p>
+  <section class="course-block p-6 md:p-8" data-activity={block.review ? undefined : 'reflectionText'}>
+    <PenLine class={reviewIconClass} size={28} />
+    <h2 class={`mt-3 text-2xl font-black ${titleClass}`}>{block.title}</h2>
+    <label class={`mt-4 block ${bodyClass}`} for={`reflection-${index}`}>{block.prompt}</label>
+    <textarea id={`reflection-${index}`} rows="5" class={`focus-ring mt-3 w-full rounded border border-black/10 bg-white p-4 ${bodyClass}`} placeholder="Type your reflection here..." data-reflection-text></textarea>
+    <p class={`mt-3 text-sm ${bodyClass}`}>Your response is for personal reflection and will not be assessed.</p>
   </section>
 )}
 
 {block.type === 'matching' && (
-  <section class="course-block p-6 md:p-8" data-matching>
+  <section class="course-block p-6 md:p-8" data-activity={block.review ? undefined : 'matching'} data-matching>
     <div class="flex items-center gap-3">
-      <Sparkles class={iconClass} size={28} />
-      <h2 class="text-2xl font-black">{block.title}</h2>
+      <Sparkles class={reviewIconClass} size={28} />
+      <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
     </div>
-    <p class="mt-3 text-sm font-semibold text-graphite">Choose the best match for each scenario, then check your answers.</p>
+    <p class={`mt-3 text-sm font-semibold ${bodyClass}`}>Choose the best match for each scenario, then check your answers.</p>
     <div class="mt-5 grid gap-4">
       {block.pairs.map((pair) => (
         <div class="grid gap-3 rounded border border-black/10 bg-ciTeal/20 p-4 md:grid-cols-[1fr_260px]" data-match-row data-answer={pair[1]}>
-          <p class="font-semibold leading-6 text-ink">{pair[0]}</p>
-          <select class="focus-ring rounded border border-black/10 bg-white px-4 py-3 text-sm font-bold text-graphite">
+          <p class={`font-semibold leading-6 ${titleClass}`}>{pair[0]}</p>
+          <select class={`focus-ring rounded border border-black/10 bg-white px-4 py-3 text-sm font-bold ${bodyClass}`}>
             <option value="">Select an answer</option>
             {block.pairs.map((option) => <option value={option[1]}>{option[1]}</option>)}
           </select>
@@ -167,18 +170,18 @@ const iconClass = 'text-tfgRed';
       ))}
     </div>
     <button class="focus-ring mt-5 rounded bg-ink px-5 py-3 font-bold text-white hover:bg-tfgRed" data-match-check>Check matches</button>
-    <p class="mt-4 hidden rounded border bg-white p-4 font-semibold text-graphite" data-match-feedback></p>
+    <p class={`mt-4 hidden rounded border bg-white p-4 font-semibold ${bodyClass}`} data-match-feedback></p>
   </section>
 )}
 
 {block.type === 'checklist' && (
-  <section class="course-block p-6 md:p-8">
+  <section class="course-block p-6 md:p-8" data-activity={block.review ? undefined : 'checklist'}>
     <div class="mb-5 flex items-center gap-3">
-      <CheckSquare class={iconClass} size={28} />
-      <h2 class="text-2xl font-black">{block.title}</h2>
+      <CheckSquare class={reviewIconClass} size={28} />
+      <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
     </div>
     <div class="grid gap-3 sm:grid-cols-2">
-      {block.items.map((item) => <label class="rounded border border-black/10 bg-white p-4 font-semibold"><input type="checkbox" class="mr-2 accent-tfgRed" /> {item}</label>)}
+      {block.items.map((item) => <label class={`rounded border border-black/10 bg-white p-4 font-semibold ${bodyClass}`}><input type="checkbox" class="mr-2 accent-tfgRed" data-checklist-option /> {item}</label>)}
     </div>
   </section>
 )}
@@ -200,10 +203,10 @@ const iconClass = 'text-tfgRed';
 {block.type === 'download' && (
   <section class="course-block p-6 md:p-8">
     <div class="flex items-center gap-3">
-      <Download class={iconClass} size={28} />
-      <h2 class="text-2xl font-black">{block.title}</h2>
+      <Download class={reviewIconClass} size={28} />
+      <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
     </div>
-    <p class="mt-4 leading-7 text-graphite">{block.copy}</p>
+    <p class={`mt-4 leading-7 ${bodyClass}`}>{block.copy}</p>
     <a class="focus-ring mt-5 inline-flex rounded bg-tfgRed px-5 py-3 font-bold text-white hover:bg-foschini" href={block.href} target="_blank" rel="noreferrer">{block.label}</a>
   </section>
 )}

@@ -7,7 +7,7 @@ const { title = courseTitle, currentId = '', bannerImage = '/images/banners/land
 const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" data-current-lesson={currentId} data-lesson-ids={JSON.stringify(lessons.map((lesson) => lesson.id))}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,10 +15,10 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
   </head>
   <body>
     <div class="min-h-screen lg:grid lg:grid-cols-[320px_1fr]">
-      <aside class="border-b border-black/10 bg-white/95 lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
+      <aside class="border-b border-black/10 bg-white/95 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r">
         <div class="flex items-center justify-between px-5 py-4 lg:block lg:px-6 lg:py-7">
           <a href="/" class="flex items-center gap-3">
-            <span class="grid h-11 w-11 place-items-center rounded bg-ink text-sm font-black text-white">TFG</span>
+            <img class="h-12 w-12 shrink-0 object-contain" src="/images/brand/tfg-logo.svg" alt="TFG logo" />
             <span>
               <span class="block max-w-48 text-sm font-semibold leading-tight text-ink">{courseTitle}</span>
             </span>
@@ -43,7 +43,7 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
           </div>
           <nav class="mt-5 space-y-2" aria-label="Lessons">
             <a href="/" class={`focus-ring flex items-center gap-3 rounded px-3 py-3 text-sm font-semibold ${currentId === '' ? 'bg-ink text-white' : 'text-graphite hover:bg-white'}`}>
-              <Home size={18} /> Landing Page
+              <Home size={18} /> Home
             </a>
             {lessons.map((lesson, index) => (
               <a href={`/lessons/${lesson.id}`} class={`focus-ring group flex items-start gap-3 rounded px-3 py-3 text-sm ${lesson.id === currentId ? 'bg-ink text-white' : 'text-graphite hover:bg-white'}`} data-lesson-link={lesson.id}>
@@ -76,15 +76,326 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
     </div>
     <script>
       const key = 'er-abridge-progress';
+      const completionMode = 'scorm-v1';
       const lessonIds = JSON.parse(document.documentElement.dataset.lessonIds || '[]');
+      const currentLessonId = document.documentElement.dataset.currentLesson || '';
+      const scorm = createScormRuntime();
+      scorm.initialize();
+
+      function createScormRuntime() {
+        function findApi(name) {
+          let win = window;
+          for (let i = 0; i < 8 && win; i += 1) {
+            try {
+              if (win[name]) return win[name];
+              if (win.parent === win) break;
+              win = win.parent;
+            } catch {
+              break;
+            }
+          }
+          try {
+            win = window.opener;
+            for (let i = 0; i < 8 && win; i += 1) {
+              if (win[name]) return win[name];
+              if (win.parent === win) break;
+              win = win.parent;
+            }
+          } catch {}
+          return null;
+        }
+
+        const api2004 = findApi('API_1484_11');
+        const api12 = findApi('API');
+        const version = api2004 ? '2004' : api12 ? '1.2' : null;
+        const api = api2004 || api12;
+        let initialized = false;
+
+        function call(method, value = '') {
+          if (!api || typeof api[method] !== 'function') return '';
+          try { return api[method](value); } catch { return ''; }
+        }
+
+        function setValue(field, value) {
+          if (!api) return false;
+          try {
+            const result = version === '2004' ? api.SetValue(field, value) : api.LMSSetValue(field, value);
+            return result === true || result === 'true';
+          } catch {
+            return false;
+          }
+        }
+
+        function getValue(field) {
+          if (!api) return '';
+          try {
+            const result = version === '2004' ? api.GetValue(field) : api.LMSGetValue(field);
+            return typeof result === 'string' ? result : '';
+          } catch {
+            return '';
+          }
+        }
+
+        return {
+          initialize() {
+            if (!api || initialized) return false;
+            const result = version === '2004' ? call('Initialize') : call('LMSInitialize');
+            initialized = result === true || result === 'true';
+            return initialized;
+          },
+          getSuspendData() {
+            if (!initialized) return '';
+            return getValue(version === '2004' ? 'cmi.suspend_data' : 'cmi.suspend_data');
+          },
+          setSuspendData(value) {
+            if (!initialized) return false;
+            return setValue('cmi.suspend_data', value);
+          },
+          setLocation(value) {
+            if (!initialized || !value) return false;
+            return setValue(version === '2004' ? 'cmi.location' : 'cmi.core.lesson_location', value);
+          },
+          setProgress(done, total) {
+            if (!initialized || !total) return false;
+            const ratio = done / total;
+            if (version === '2004') {
+              setValue('cmi.progress_measure', String(Math.min(1, ratio).toFixed(2)));
+            } else {
+              setValue('cmi.core.score.raw', String(Math.round(ratio * 100)));
+            }
+            return true;
+          },
+          setCompletion(complete) {
+            if (!initialized) return false;
+            if (version === '2004') {
+              setValue('cmi.completion_status', complete ? 'completed' : 'incomplete');
+              if (complete) setValue('cmi.success_status', 'passed');
+            } else {
+              setValue('cmi.core.lesson_status', complete ? 'completed' : 'incomplete');
+            }
+            return true;
+          },
+          commit() {
+            if (!initialized) return false;
+            const result = version === '2004' ? call('Commit') : call('LMSCommit');
+            return result === true || result === 'true';
+          },
+          terminate() {
+            if (!initialized) return false;
+            const result = version === '2004' ? call('Terminate') : call('LMSFinish');
+            initialized = false;
+            return result === true || result === 'true';
+          },
+        };
+      }
 
       function readProgress() {
-        try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch { return {}; }
+        let progress;
+        const stored = scorm.getSuspendData() || localStorage.getItem(key) || '{}';
+        try { progress = JSON.parse(stored); } catch { progress = {}; }
+        return migrateProgress(progress);
+      }
+
+      function migrateProgress(progress) {
+        if (progress.__completionMode === completionMode) return progress;
+        const migrated = { __completionMode: completionMode };
+        lessonIds.forEach((id) => {
+          const lesson = progress[id] || {};
+          migrated[id] = {
+            viewed: Boolean(lesson.viewed || lesson.complete),
+            activities: lesson.activities || {},
+            inputs: lesson.inputs || {},
+            complete: Boolean(lesson.complete && lesson.activities),
+            completedAt: lesson.completedAt,
+          };
+        });
+        return migrated;
+      }
+
+      function ensureLesson(progress, id) {
+        if (!progress[id]) progress[id] = { viewed: false, activities: {}, inputs: {}, complete: false };
+        if (!progress[id].activities) progress[id].activities = {};
+        if (!progress[id].inputs) progress[id].inputs = {};
+        return progress[id];
       }
 
       function writeProgress(progress) {
-        localStorage.setItem(key, JSON.stringify(progress));
+        progress.__completionMode = completionMode;
+        const serialized = JSON.stringify(progress);
+        localStorage.setItem(key, serialized);
+        scorm.setSuspendData(serialized);
+        if (currentLessonId) scorm.setLocation(currentLessonId);
+        syncScormCompletion(progress);
+        scorm.commit();
         renderProgress();
+      }
+
+      function syncScormCompletion(progress) {
+        const done = lessonIds.filter((id) => progress[id]?.complete).length;
+        const complete = lessonIds.length > 0 && done === lessonIds.length;
+        scorm.setProgress(done, lessonIds.length);
+        scorm.setCompletion(complete);
+      }
+
+      function updateProgress(mutator) {
+        const progress = readProgress();
+        mutator(progress);
+        writeProgress(progress);
+      }
+
+      function activityId(activity, index) {
+        return activity.dataset.activityId || `${activity.getAttribute('data-activity')}-${index}`;
+      }
+
+      function requiredActivities() {
+        return [...document.querySelectorAll('[data-activity]')];
+      }
+
+      function readActivityInput(activity) {
+        if (activity.matches('[data-activity="reflection"]')) {
+          return {
+            checked: [...activity.querySelectorAll('[data-reflection-option]')]
+              .map((input, index) => input.checked ? index : -1)
+              .filter((index) => index >= 0),
+          };
+        }
+        if (activity.matches('[data-activity="reflectionText"]')) {
+          return { text: activity.querySelector('[data-reflection-text]')?.value || '' };
+        }
+        if (activity.matches('[data-activity="checklist"]')) {
+          return {
+            checked: [...activity.querySelectorAll('[data-checklist-option]')]
+              .map((input, index) => input.checked ? index : -1)
+              .filter((index) => index >= 0),
+          };
+        }
+        if (activity.matches('[data-activity="matching"]')) {
+          return { values: [...activity.querySelectorAll('select')].map((select) => select.value) };
+        }
+        return null;
+      }
+
+      function storeActivityInput(progress, activity, id) {
+        const input = readActivityInput(activity);
+        const lesson = ensureLesson(progress, currentLessonId);
+        if (input) {
+          lesson.inputs[id] = input;
+        } else {
+          delete lesson.inputs[id];
+        }
+      }
+
+      function restoreActivityInput(activity, input) {
+        if (!input) return;
+        if (activity.matches('[data-activity="reflection"]')) {
+          activity.querySelectorAll('[data-reflection-option]').forEach((checkbox, index) => {
+            checkbox.checked = input.checked?.includes(index) || false;
+          });
+        }
+        if (activity.matches('[data-activity="reflectionText"]')) {
+          const textarea = activity.querySelector('[data-reflection-text]');
+          if (textarea) textarea.value = input.text || '';
+        }
+        if (activity.matches('[data-activity="checklist"]')) {
+          activity.querySelectorAll('[data-checklist-option]').forEach((checkbox, index) => {
+            checkbox.checked = input.checked?.includes(index) || false;
+          });
+        }
+        if (activity.matches('[data-activity="matching"]')) {
+          activity.querySelectorAll('select').forEach((select, index) => {
+            select.value = input.values?.[index] || '';
+          });
+        }
+      }
+
+      function freeformActivityComplete(activity) {
+        if (activity.matches('[data-activity="reflection"]')) {
+          return Boolean(activity.querySelector('[data-reflection-option]:checked'));
+        }
+        if (activity.matches('[data-activity="reflectionText"]')) {
+          return Boolean(activity.querySelector('[data-reflection-text]')?.value.trim());
+        }
+        if (activity.matches('[data-activity="checklist"]')) {
+          const checks = [...activity.querySelectorAll('[data-checklist-option]')];
+          return checks.length > 0 && checks.every((check) => check.checked);
+        }
+        return null;
+      }
+
+      function setActivityComplete(activity, complete) {
+        if (!currentLessonId) return;
+        const activities = requiredActivities();
+        const id = activityId(activity, activities.indexOf(activity));
+        activity.dataset.activityComplete = complete ? 'true' : 'false';
+        updateProgress((progress) => {
+          const lesson = ensureLesson(progress, currentLessonId);
+          if (complete) {
+            lesson.activities[id] = true;
+          } else {
+            delete lesson.activities[id];
+          }
+          storeActivityInput(progress, activity, id);
+          updateLessonCompletion(progress);
+        });
+      }
+
+      function persistActivityInput(activity, forceIncomplete = false) {
+        if (!currentLessonId) return;
+        const activities = requiredActivities();
+        const id = activityId(activity, activities.indexOf(activity));
+        updateProgress((progress) => {
+          const lesson = ensureLesson(progress, currentLessonId);
+          storeActivityInput(progress, activity, id);
+          if (forceIncomplete) {
+            delete lesson.activities[id];
+            activity.dataset.activityComplete = 'false';
+          }
+          updateLessonCompletion(progress);
+        });
+      }
+
+      function updateLessonCompletion(progress = readProgress()) {
+        if (!currentLessonId) return progress;
+        const lesson = ensureLesson(progress, currentLessonId);
+        const complete = lesson.viewed && requiredActivities().every((activity, index) => {
+          const id = activityId(activity, index);
+          return lesson.activities[id] || activity.dataset.activityComplete === 'true';
+        });
+        if (complete && !lesson.complete) lesson.completedAt = new Date().toISOString();
+        lesson.complete = complete;
+        if (!complete) delete lesson.completedAt;
+        return progress;
+      }
+
+      function evaluateFreeformActivity(activity) {
+        if (activity.matches('[data-activity="reflection"]')) {
+          setActivityComplete(activity, Boolean(activity.querySelector('[data-reflection-option]:checked')));
+        }
+        if (activity.matches('[data-activity="reflectionText"]')) {
+          setActivityComplete(activity, Boolean(activity.querySelector('[data-reflection-text]')?.value.trim()));
+        }
+        if (activity.matches('[data-activity="checklist"]')) {
+          const checks = [...activity.querySelectorAll('[data-checklist-option]')];
+          setActivityComplete(activity, checks.length > 0 && checks.every((check) => check.checked));
+        }
+      }
+
+      function initializeCurrentLesson() {
+        if (!currentLessonId) return;
+        const progress = readProgress();
+        const lesson = ensureLesson(progress, currentLessonId);
+        lesson.viewed = true;
+        requiredActivities().forEach((activity, index) => {
+          const id = activityId(activity, index);
+          activity.dataset.activityId = id;
+          restoreActivityInput(activity, lesson.inputs[id]);
+          const freeformComplete = freeformActivityComplete(activity);
+          const complete = lesson.activities[id] || freeformComplete === true;
+          if (freeformComplete === true) lesson.activities[id] = true;
+          activity.dataset.activityComplete = complete ? 'true' : 'false';
+        });
+        updateLessonCompletion(progress);
+        writeProgress(progress);
       }
 
       function renderProgress() {
@@ -136,6 +447,7 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
           feedback.querySelector('[data-feedback-copy]').textContent = ok ? group.getAttribute('data-full-feedback') : 'Please try again.';
           feedback.classList.toggle('border-green-700', ok);
           feedback.classList.toggle('border-tfgRed', !ok);
+          setActivityComplete(group, ok);
         }
         const matchCheck = target.closest('[data-match-check]');
         if (matchCheck) {
@@ -152,15 +464,35 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
           const feedback = group.querySelector('[data-match-feedback]');
           feedback.classList.remove('hidden');
           feedback.textContent = allCorrect ? 'Correct. Each scenario has been matched to the right pathway.' : 'Good try, try again.';
-        }
-        const completionLink = target.closest('[data-complete-and-go]');
-        if (completionLink) {
-          const id = completionLink.getAttribute('data-complete-and-go');
-          const progress = readProgress();
-          progress[id] = { complete: true, completedAt: new Date().toISOString() };
-          writeProgress(progress);
+          setActivityComplete(group, allCorrect);
         }
       });
+      document.addEventListener('input', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const activity = target.closest('[data-activity="reflection"], [data-activity="reflectionText"], [data-activity="checklist"]');
+        if (activity) evaluateFreeformActivity(activity);
+      });
+      document.addEventListener('change', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const activity = target.closest('[data-activity="reflection"], [data-activity="reflectionText"], [data-activity="checklist"]');
+        if (activity) evaluateFreeformActivity(activity);
+        const matching = target.closest('[data-activity="matching"]');
+        if (matching && target.matches('select')) persistActivityInput(matching, true);
+      });
+      window.addEventListener('pagehide', () => {
+        const progress = readProgress();
+        if (currentLessonId) updateLessonCompletion(progress);
+        const serialized = JSON.stringify(progress);
+        localStorage.setItem(key, serialized);
+        scorm.setSuspendData(serialized);
+        if (currentLessonId) scorm.setLocation(currentLessonId);
+        syncScormCompletion(progress);
+        scorm.commit();
+        scorm.terminate();
+      });
+      initializeCurrentLesson();
       renderProgress();
     </script>
   </body>

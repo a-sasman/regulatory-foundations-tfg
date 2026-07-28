@@ -5,8 +5,8 @@ export default {
       colors: {
         ink: '#171717',
         graphite: '#2b2d31',
-        tfgRed: '#6f2dbd',
-        foschini: '#4b1979',
+        tfgRed: '#6c2c84',
+        foschini: '#6c2c84',
         pearl: '#f7f4ef',
         mist: '#edf2f5',
         ciGrey: '#58595b',

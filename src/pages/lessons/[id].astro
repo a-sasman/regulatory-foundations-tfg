@@ -35,7 +35,7 @@ const bannerPosition = bannerPositions[lesson.number] ?? 'center center';
     <section class="course-block p-6 md:p-8">
       <div class="flex flex-wrap gap-3">
         {previous && <a class="focus-ring rounded border border-black/10 bg-white px-4 py-3 font-bold text-graphite hover:border-tfgRed" href={`/lessons/${previous.id}`}>Previous lesson</a>}
-        {next ? <a class="focus-ring rounded bg-ink px-4 py-3 font-bold text-white hover:bg-tfgRed" href={`/lessons/${next.id}`} data-complete-and-go={lesson.id}>Next lesson</a> : <a class="focus-ring rounded bg-ink px-4 py-3 font-bold text-white hover:bg-tfgRed" href="/" data-complete-and-go={lesson.id}>Finish course</a>}
+        {next ? <a class="focus-ring rounded bg-ink px-4 py-3 font-bold text-white hover:bg-tfgRed" href={`/lessons/${next.id}`}>Next lesson</a> : <a class="focus-ring rounded bg-ink px-4 py-3 font-bold text-white hover:bg-tfgRed" href="/">Finish course</a>}
       </div>
     </section>
   </article>
