@@ -422,23 +422,25 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
         if (option) {
           const group = option.closest('[data-interaction]');
           const multi = group?.getAttribute('data-multi') === 'true';
-          if (!multi) group?.querySelectorAll('[data-option]').forEach((el) => el.classList.remove('border-tfgRed', 'bg-red-50'));
-          option.classList.toggle('border-tfgRed');
-          option.classList.toggle('bg-red-50');
+          const wasSelected = isQuizOptionSelected(option);
+          if (!multi) group?.querySelectorAll('[data-option]').forEach((el) => setQuizOptionSelected(el, false));
+          setQuizOptionSelected(option, !wasSelected);
+          resetQuizResult(group);
+          setActivityComplete(group, false);
         }
         const check = target.closest('[data-check]');
         if (check) {
           const group = check.closest('[data-interaction]');
           const correct = JSON.parse(group?.getAttribute('data-correct') || '[]');
-          const selected = [...group.querySelectorAll('[data-option].border-tfgRed')].map((el) => el.getAttribute('data-value'));
+          const selected = [...group.querySelectorAll('[data-option][aria-pressed="true"]')].map((el) => el.getAttribute('data-value'));
           const ok = correct.length === selected.length && correct.every((item) => selected.includes(item));
           group.querySelectorAll('[data-option]').forEach((el) => {
             const value = el.getAttribute('data-value');
-            el.classList.remove('border-green-700', 'bg-green-50', 'border-tfgRed', 'bg-red-50');
-            if (correct.includes(value)) {
-              el.classList.add('border-green-700', 'bg-green-50');
-            } else if (selected.includes(value)) {
-              el.classList.add('border-tfgRed', 'bg-red-50');
+            el.classList.remove('is-correct', 'is-incorrect');
+            if (ok && correct.includes(value)) {
+              el.classList.add('is-correct');
+            } else if (!ok && selected.includes(value)) {
+              el.classList.add('is-incorrect');
             }
           });
           const feedback = group.querySelector('[data-feedback]');
@@ -511,6 +513,32 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
       });
       initializeCurrentLesson();
       renderProgress();
+
+      function isQuizOptionSelected(option) {
+        return option?.getAttribute('aria-pressed') === 'true';
+      }
+
+      function setQuizOptionSelected(option, selected) {
+        option?.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      }
+
+      function resetQuizResult(group) {
+        if (!group) return;
+        group.querySelectorAll('[data-option]').forEach((el) => el.classList.remove('is-correct', 'is-incorrect'));
+        const feedback = group.querySelector('[data-feedback]');
+        if (!feedback) return;
+        feedback.classList.add('hidden');
+        feedback.classList.remove('border-green-700', 'border-tfgRed');
+        const result = feedback.querySelector('[data-result]');
+        if (result) result.textContent = '';
+        const feedbackCopy = feedback.querySelector('[data-feedback-copy]');
+        if (feedbackCopy) feedbackCopy.innerHTML = '';
+        const tipCopy = feedback.querySelector('[data-tip-copy]');
+        if (tipCopy) {
+          tipCopy.innerHTML = '';
+          tipCopy.classList.add('hidden');
+        }
+      }
 
       function readJsonArray(value) {
         try {

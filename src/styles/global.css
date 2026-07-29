@@ -73,3 +73,51 @@ button, input, textarea {
 .focus-ring {
   @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-tfgRed focus-visible:ring-offset-2;
 }
+
+.quiz-option {
+  @apply flex items-start gap-3 rounded border-2 border-black/10 bg-white p-4 text-left font-semibold shadow-sm transition hover:border-tfgRed hover:bg-[#f4eaf8];
+}
+
+.quiz-option-marker {
+  @apply mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 border-black/20 bg-white text-white transition;
+}
+
+.quiz-option-check {
+  @apply opacity-0 transition;
+}
+
+.quiz-option[aria-pressed="true"] {
+  @apply border-tfgRed bg-[#f4eaf8] ring-2 ring-tfgRed ring-offset-2;
+}
+
+.quiz-option[aria-pressed="true"] .quiz-option-marker {
+  @apply border-tfgRed bg-tfgRed;
+}
+
+.quiz-option[aria-pressed="true"] .quiz-option-check {
+  @apply opacity-100;
+}
+
+.quiz-option.is-correct {
+  @apply border-green-700 bg-green-50 ring-2 ring-green-700 ring-offset-2;
+}
+
+.quiz-option.is-correct .quiz-option-marker {
+  @apply border-green-700 bg-green-700;
+}
+
+.quiz-option.is-correct .quiz-option-check {
+  @apply opacity-100;
+}
+
+.quiz-option.is-incorrect {
+  @apply border-tfgRed bg-red-50 ring-2 ring-tfgRed ring-offset-2;
+}
+
+.quiz-option.is-incorrect .quiz-option-marker {
+  @apply border-tfgRed bg-tfgRed;
+}
+
+.quiz-option.is-incorrect .quiz-option-check {
+  @apply opacity-100;
+}

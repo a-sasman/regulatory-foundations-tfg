@@ -1,5 +1,5 @@
 ---
-import { AlertTriangle, CheckSquare, ChevronDown, ClipboardList, Download, Layers3, MessageSquareQuote, PenLine, Sparkles } from 'lucide-astro';
+import { AlertTriangle, Check, CheckSquare, ChevronDown, ClipboardList, Download, Layers3, MessageSquareQuote, PenLine, Sparkles } from 'lucide-astro';
 import { resources } from '../data/course.js';
 import RichText from './RichText.astro';
 
@@ -126,7 +126,10 @@ const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip
     {block.question && <p class={`mt-4 text-lg font-semibold ${bodyClass}`}>{block.question}</p>}
     <div class="mt-5 grid gap-3">
       {block.options.map((option) => (
-        <button class={`focus-ring rounded border border-black/10 bg-white p-4 text-left font-semibold hover:border-tfgRed ${bodyClass}`} data-option data-value={option}>{option}</button>
+        <button class={`quiz-option focus-ring ${bodyClass}`} type="button" aria-pressed="false" data-option data-value={option}>
+          <span class="quiz-option-marker" aria-hidden="true"><Check class="quiz-option-check" size={16} /></span>
+          <span>{option}</span>
+        </button>
       ))}
     </div>
     <button class="focus-ring mt-5 rounded bg-ink px-5 py-3 font-bold text-white hover:bg-tfgRed" data-check>Check answer</button>
