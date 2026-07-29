@@ -5,16 +5,16 @@ import RichText from './RichText.astro';
 
 const { block, index } = Astro.props;
 const iconClass = 'text-tfgRed';
-const titleClass = block.review ? 'text-red-700' : 'text-ink';
-const bodyClass = block.review ? 'text-red-700' : 'text-graphite';
-const reviewIconClass = block.review ? 'text-red-700' : iconClass;
+const titleClass = 'text-ink';
+const bodyClass = 'text-graphite';
+const reviewIconClass = iconClass;
 const feedbackValue = JSON.stringify(Array.isArray(block.feedback) ? block.feedback : block.feedback ? [block.feedback] : []);
 const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip ? [block.tip] : []);
 ---
 {block.type === 'statement' && (
   <section class="course-block overflow-hidden">
     <div class="border-l-4 border-tfgRed p-6 md:p-8">
-      {block.eyebrow && <p class={`mb-3 text-xs font-bold uppercase tracking-[0.22em] ${block.review ? 'text-red-700' : 'text-tfgRed'}`}>{block.eyebrow}</p>}
+      {block.eyebrow && <p class="mb-3 text-xs font-bold uppercase tracking-[0.22em] text-tfgRed">{block.eyebrow}</p>}
       {block.title && <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>}
       <RichText items={block.copy} className={`${block.title ? 'mt-4' : ''} space-y-3 text-base leading-7 ${bodyClass}`} />
     </div>
@@ -25,7 +25,7 @@ const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip
   <section class="course-block border-l-4 border-tfgRed bg-white p-7 text-ink md:p-9">
     <div class="flex items-center gap-3">
       <MessageSquareQuote class={reviewIconClass} size={34} />
-      {block.eyebrow && <p class={`text-xs font-bold uppercase tracking-[0.22em] ${block.review ? 'text-red-700' : 'text-tfgRed'}`}>{block.eyebrow}</p>}
+      {block.eyebrow && <p class="text-xs font-bold uppercase tracking-[0.22em] text-tfgRed">{block.eyebrow}</p>}
     </div>
     <RichText items={block.copy} className={`mt-5 space-y-2 text-2xl font-black leading-tight ${titleClass}`} />
     <RichText items={block.detail} className={`mt-4 max-w-3xl space-y-3 leading-7 ${bodyClass}`} />
@@ -84,7 +84,7 @@ const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip
         <details class="group py-4">
           <summary class={`flex cursor-pointer list-none items-center justify-between gap-4 font-bold ${titleClass}`}>
             <span>{item.title ?? item[0]}</span>
-            <ChevronDown class={`shrink-0 transition group-open:rotate-180 ${block.review ? 'text-red-700' : 'text-tfgRed'}`} size={20} />
+            <ChevronDown class="shrink-0 text-tfgRed transition group-open:rotate-180" size={20} />
           </summary>
           <RichText items={item.copy ?? item[1]} className={`mt-3 space-y-3 leading-7 ${bodyClass}`} />
         </details>
