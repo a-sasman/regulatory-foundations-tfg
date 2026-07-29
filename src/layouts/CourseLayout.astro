@@ -444,7 +444,23 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
           const feedback = group.querySelector('[data-feedback]');
           feedback.classList.remove('hidden');
           feedback.querySelector('[data-result]').textContent = ok ? 'Correct' : 'Good try';
-          feedback.querySelector('[data-feedback-copy]').textContent = ok ? group.getAttribute('data-full-feedback') : 'Please try again.';
+          const feedbackCopy = feedback.querySelector('[data-feedback-copy]');
+          feedbackCopy.innerHTML = '';
+          const feedbackItems = ok ? readJsonArray(group.getAttribute('data-full-feedback')) : ['Please try again.'];
+          feedbackItems.forEach((item) => {
+            const p = document.createElement('p');
+            p.textContent = item;
+            feedbackCopy.appendChild(p);
+          });
+          const tipCopy = feedback.querySelector('[data-tip-copy]');
+          tipCopy.innerHTML = '';
+          const tipItems = ok ? readJsonArray(group.getAttribute('data-tip')) : [];
+          tipCopy.classList.toggle('hidden', tipItems.length === 0);
+          tipItems.forEach((item) => {
+            const p = document.createElement('p');
+            p.textContent = item;
+            tipCopy.appendChild(p);
+          });
           feedback.classList.toggle('border-green-700', ok);
           feedback.classList.toggle('border-tfgRed', !ok);
           setActivityComplete(group, ok);
@@ -462,8 +478,9 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
             if (!ok) allCorrect = false;
           });
           const feedback = group.querySelector('[data-match-feedback]');
-          feedback.classList.remove('hidden');
-          feedback.textContent = allCorrect ? 'Correct. Each scenario has been matched to the right pathway.' : 'Good try, try again.';
+          const feedbackText = allCorrect ? group.getAttribute('data-match-feedback-text') : 'Good try, try again.';
+          feedback.textContent = feedbackText || '';
+          feedback.classList.toggle('hidden', !feedbackText);
           setActivityComplete(group, allCorrect);
         }
       });
@@ -494,6 +511,15 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
       });
       initializeCurrentLesson();
       renderProgress();
+
+      function readJsonArray(value) {
+        try {
+          const parsed = JSON.parse(value || '[]');
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
     </script>
   </body>
 </html>

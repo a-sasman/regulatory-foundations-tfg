@@ -1,0 +1,13 @@
+---
+const { items = [], className = '' } = Astro.props;
+const content = Array.isArray(items) ? items : items ? [items] : [];
+---
+<div class={className}>
+  {content.map((item) => (
+    typeof item === 'string'
+      ? <p>{item}</p>
+      : item?.type === 'list'
+        ? <ul class="ml-6 list-disc space-y-1">{item.items.map((entry) => <li>{entry}</li>)}</ul>
+        : null
+  ))}
+</div>
