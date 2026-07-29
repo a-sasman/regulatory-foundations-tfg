@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Astro build and dev output
+.astro/
+dist/
+
+# Logs
+*.log
+*.err.log
+npm-debug.log*
+
+# Local environment files
+.env
+.env.*
+
+# Temporary storyboard/change extraction artefacts
+_changes*/
+_docx*/
+*_text.txt
+*_extract/
+_extract*.mjs
+*.zip
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
