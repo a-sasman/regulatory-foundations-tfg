@@ -10,6 +10,7 @@ const bodyClass = 'text-graphite';
 const reviewIconClass = iconClass;
 const feedbackValue = JSON.stringify(Array.isArray(block.feedback) ? block.feedback : block.feedback ? [block.feedback] : []);
 const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip ? [block.tip] : []);
+const isPillCards = block.layout === 'pills';
 ---
 {block.type === 'statement' && (
   <section class="course-block overflow-hidden">
@@ -22,9 +23,9 @@ const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip
 )}
 
 {block.type === 'quote' && (
-  <section class="course-block border-l-4 border-tfgRed bg-white p-7 text-ink md:p-9">
+  <section class="course-block callout-bubble p-7 text-ink md:p-9">
     <div class="flex items-center gap-3">
-      <MessageSquareQuote class={reviewIconClass} size={34} />
+      <MessageSquareQuote class="text-ink" size={34} />
       {block.eyebrow && <p class="text-xs font-bold uppercase tracking-[0.22em] text-tfgRed">{block.eyebrow}</p>}
     </div>
     <RichText items={block.copy} className={`mt-5 space-y-2 text-2xl font-black leading-tight ${titleClass}`} />
@@ -59,11 +60,12 @@ const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip
       <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
     </div>
     {block.intro && <RichText items={block.intro} className={`mb-5 space-y-3 leading-7 ${bodyClass}`} />}
-    <div class="tone-grid grid gap-4 sm:grid-cols-2">
+    <div class={isPillCards ? 'tone-grid pill-grid grid gap-4 sm:grid-cols-2 xl:grid-cols-4' : 'tone-grid grid gap-4 sm:grid-cols-2'}>
       {block.cards.map((card) => (
-        <article class="tone-chip p-5">
-          <h3 class={`font-black ${titleClass}`}>{card.title ?? card[0]}</h3>
-          <RichText items={card.copy ?? card[1]} className={`mt-2 space-y-2 text-sm leading-6 ${bodyClass}`} />
+        <article class={isPillCards ? 'tone-chip pill-chip p-6 text-center' : 'tone-chip p-5'}>
+          {!block.hideMarkers && <div class="mb-4 h-10 w-10 rounded card-marker" aria-hidden="true"></div>}
+          <h3 class={`font-black ${isPillCards ? 'text-base leading-snug' : ''} ${titleClass}`}>{card.title ?? card[0]}</h3>
+          <RichText items={card.copy ?? card[1]} className={`mt-2 space-y-2 ${isPillCards ? 'text-base leading-7' : 'text-sm leading-6'} ${bodyClass}`} />
         </article>
       ))}
     </div>
@@ -102,10 +104,10 @@ const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip
         {block.intro && <RichText items={block.intro} className={`mt-1 space-y-2 ${bodyClass}`} />}
       </div>
     </div>
-    <ol class="space-y-4">
+    <ol class="process-list space-y-4">
       {block.steps.map((step, i) => (
         <li class="grid gap-4 rounded border border-black/10 bg-white p-4 sm:grid-cols-[48px_1fr]">
-          <span class="grid h-12 w-12 place-items-center rounded bg-ciGrey font-black text-white">{i + 1}</span>
+          <span class="process-step-badge grid h-12 w-12 place-items-center rounded font-black text-white">{i + 1}</span>
           <span>
             <span class={`block font-black ${titleClass}`}>{step.title ?? step[0]}</span>
             <RichText items={step.copy ?? step[1]} className={`mt-1 space-y-2 leading-6 ${bodyClass}`} />
@@ -113,6 +115,24 @@ const tipValue = JSON.stringify(Array.isArray(block.tip) ? block.tip : block.tip
         </li>
       ))}
     </ol>
+  </section>
+)}
+
+{block.type === 'flow' && (
+  <section class="course-block p-6 md:p-8">
+    <div class="mb-6 flex items-center gap-3">
+      <Sparkles class={reviewIconClass} size={26} />
+      <h2 class={`text-2xl font-black ${titleClass}`}>{block.title}</h2>
+    </div>
+    <ol class="fairness-flow grid gap-4 md:grid-cols-5">
+      {block.items.map((item, i) => (
+        <li class="flow-step relative rounded border border-black/10 bg-white p-4">
+          <span class="process-step-badge mb-4 grid h-10 w-10 place-items-center rounded font-black text-white">{i + 1}</span>
+          <span class={`block text-sm font-black leading-snug ${titleClass}`}>{item}</span>
+        </li>
+      ))}
+    </ol>
+    {block.footer && <RichText items={block.footer} className={`mt-6 space-y-3 rounded bg-ciTeal/20 p-4 font-semibold leading-7 ${bodyClass}`} />}
   </section>
 )}
 
