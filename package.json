@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:scorm": "npm run build && powershell -ExecutionPolicy Bypass -File scripts/build-scorm.ps1",
     "preview": "astro preview"
   },
   "dependencies": {

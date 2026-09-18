@@ -13,18 +13,25 @@ const previous = lessons[index - 1];
 const next = lessons[index + 1];
 const bannerImage = `/images/banners/lesson-${lesson.number}.jpg`;
 const bannerPositions = {
-  0: 'center 48%',
-  1: 'center 46%',
-  2: 'center 45%',
-  3: 'center 62%',
-  4: 'center 48%',
-  5: 'center 64%',
-  6: 'center 46%',
-  7: 'center 45%',
+  0: { desktop: 'center 48%', tablet: 'center 48%', mobile: 'center 48%' },
+  1: { desktop: 'center 46%', tablet: 'center 46%', mobile: '55% 46%' },
+  2: { desktop: 'center 45%', tablet: 'center 45%', mobile: '55% 45%' },
+  3: { desktop: 'center 62%', tablet: 'center 62%', mobile: 'center 62%' },
+  4: { desktop: 'center 48%', tablet: 'center 48%', mobile: 'center 48%' },
+  5: { desktop: 'center 64%', tablet: 'center 64%', mobile: 'center 64%' },
+  6: { desktop: 'center 46%', tablet: 'center 46%', mobile: '140% 46%' },
+  7: { desktop: 'center 45%', tablet: 'center 45%', mobile: 'center 45%' },
 };
-const bannerPosition = bannerPositions[lesson.number] ?? 'center center';
+const bannerPosition = bannerPositions[lesson.number] ?? { desktop: 'center center', tablet: 'center center', mobile: 'center center' };
 ---
-<CourseLayout title={`${lesson.title} | ${courseTitle}`} currentId={lesson.id} bannerImage={bannerImage} bannerPosition={bannerPosition}>
+<CourseLayout
+  title={`${lesson.title} | ${courseTitle}`}
+  currentId={lesson.id}
+  bannerImage={bannerImage}
+  bannerPosition={bannerPosition.desktop}
+  bannerPositionTablet={bannerPosition.tablet}
+  bannerPositionMobile={bannerPosition.mobile}
+>
   <Fragment slot="hero">
     <p class="mt-5 text-xs font-bold uppercase tracking-[0.22em] text-ciLavender">Lesson {lesson.number}</p>
     <h1 class="mt-3 max-w-3xl text-4xl font-black leading-tight md:text-5xl">{lesson.title}</h1>

@@ -3,7 +3,14 @@ import '../styles/global.css';
 import { BookOpen, Circle, Home, Menu } from 'lucide-astro';
 import { courseTitle, lessons } from '../data/course.js';
 
-const { title = courseTitle, currentId = '', bannerImage = '/images/banners/landing.jpg', bannerPosition = 'center center' } = Astro.props;
+const {
+  title = courseTitle,
+  currentId = '',
+  bannerImage = '/images/banners/landing.jpg',
+  bannerPosition = 'center center',
+  bannerPositionTablet = bannerPosition,
+  bannerPositionMobile = bannerPosition,
+} = Astro.props;
 const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
 ---
 <!doctype html>
@@ -11,6 +18,7 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/images/brand/tfg-logo.svg" type="image/svg+xml" />
     <title>{title}</title>
   </head>
   <body>
@@ -55,11 +63,21 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
               </a>
             ))}
           </nav>
+          <div class="mt-5 border-t border-black/10 pt-5">
+            <button class="focus-ring w-full rounded bg-ink px-4 py-3 font-bold text-white hover:bg-tfgRed" type="button" data-exit-course>Exit course</button>
+            <p class="mt-2 hidden text-sm font-semibold text-graphite" role="status" data-exit-status>Progress saved. You can close this window.</p>
+          </div>
         </div>
       </aside>
       <main>
         <header class="relative overflow-hidden border-b border-black/10 bg-ink text-white">
-          <img class="absolute inset-0 h-full w-full object-cover" src={bannerImage} alt="" loading="eager" style={`object-position: ${bannerPosition};`} />
+          <img
+            class="course-banner-image absolute inset-0 h-full w-full object-cover"
+            src={bannerImage}
+            alt=""
+            loading="eager"
+            style={`--banner-position-mobile: ${bannerPositionMobile}; --banner-position-tablet: ${bannerPositionTablet}; --banner-position-desktop: ${bannerPosition};`}
+          />
           <div class="absolute inset-0 bg-gradient-to-r from-ink via-ink/78 to-ink/30"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-transparent"></div>
           <div class="relative mx-auto max-w-5xl px-5 py-14 lg:px-10 lg:py-20">
@@ -76,9 +94,11 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
     </div>
     <script>
       const key = 'er-abridge-progress';
-      const completionMode = 'scorm-v1';
+      const completionMode = 'scorm-visit-v2';
       const lessonIds = JSON.parse(document.documentElement.dataset.lessonIds || '[]');
       const currentLessonId = document.documentElement.dataset.currentLesson || '';
+      let internalNavigation = false;
+      let explicitExit = false;
       const scorm = createScormRuntime();
       scorm.initialize();
 
@@ -175,6 +195,33 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
             }
             return true;
           },
+          setExit(complete) {
+            if (!initialized) return false;
+            return setValue(version === '2004' ? 'cmi.exit' : 'cmi.core.exit', complete ? (version === '2004' ? 'normal' : '') : 'suspend');
+          },
+          recordSurveyInteraction(id, description, response) {
+            if (!initialized || !id || !response) return false;
+            const count = Number.parseInt(getValue('cmi.interactions._count'), 10) || 0;
+            let interactionIndex = -1;
+            for (let index = 0; index < count; index += 1) {
+              if (getValue(`cmi.interactions.${index}.id`) === id) {
+                interactionIndex = index;
+                break;
+              }
+            }
+            if (interactionIndex < 0) interactionIndex = count;
+            const prefix = `cmi.interactions.${interactionIndex}`;
+            let saved = setValue(`${prefix}.id`, id);
+            saved = setValue(`${prefix}.type`, 'choice') && saved;
+            if (version === '2004') {
+              saved = setValue(`${prefix}.description`, description) && saved;
+              saved = setValue(`${prefix}.learner_response`, response) && saved;
+            } else {
+              saved = setValue(`${prefix}.student_response`, response) && saved;
+            }
+            saved = setValue(`${prefix}.result`, 'neutral') && saved;
+            return saved;
+          },
           commit() {
             if (!initialized) return false;
             const result = version === '2004' ? call('Commit') : call('LMSCommit');
@@ -190,10 +237,33 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
       }
 
       function readProgress() {
-        let progress;
-        const stored = scorm.getSuspendData() || localStorage.getItem(key) || '{}';
-        try { progress = JSON.parse(stored); } catch { progress = {}; }
-        return migrateProgress(progress);
+        const parse = (stored) => {
+          try { return JSON.parse(stored || '{}'); } catch { return {}; }
+        };
+        const remote = parse(scorm.getSuspendData());
+        const local = parse(localStorage.getItem(key));
+        const isCompact = remote.__scormProgress === completionMode;
+        const progress = migrateProgress(isCompact ? local : (Object.keys(remote).length ? remote : local));
+        if (isCompact) {
+          const visited = new Set(Array.isArray(remote.visited) ? remote.visited : []);
+          lessonIds.forEach((id) => {
+            if (!visited.has(id)) return;
+            const lesson = ensureLesson(progress, id);
+            lesson.viewed = true;
+            lesson.complete = true;
+          });
+          progress.__requirementsMet = lessonIds.length > 0 && lessonIds.every((id) => progress[id]?.viewed);
+          progress.__completionReported = Boolean(remote.completed);
+        }
+        return progress;
+      }
+
+      function serializeScormProgress(progress) {
+        return JSON.stringify({
+          __scormProgress: completionMode,
+          visited: lessonIds.filter((id) => progress[id]?.viewed),
+          completed: Boolean(progress.__completionReported),
+        });
       }
 
       function migrateProgress(progress) {
@@ -205,10 +275,12 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
             viewed: Boolean(lesson.viewed || lesson.complete),
             activities: lesson.activities || {},
             inputs: lesson.inputs || {},
-            complete: Boolean(lesson.complete && lesson.activities),
+            complete: Boolean(lesson.viewed || lesson.complete),
             completedAt: lesson.completedAt,
           };
         });
+        migrated.__requirementsMet = lessonIds.length > 0 && lessonIds.every((id) => migrated[id]?.viewed);
+        migrated.__completionReported = false;
         return migrated;
       }
 
@@ -223,7 +295,7 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
         progress.__completionMode = completionMode;
         const serialized = JSON.stringify(progress);
         localStorage.setItem(key, serialized);
-        scorm.setSuspendData(serialized);
+        scorm.setSuspendData(serializeScormProgress(progress));
         if (currentLessonId) scorm.setLocation(currentLessonId);
         syncScormCompletion(progress);
         scorm.commit();
@@ -231,8 +303,8 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
       }
 
       function syncScormCompletion(progress) {
-        const done = lessonIds.filter((id) => progress[id]?.complete).length;
-        const complete = lessonIds.length > 0 && done === lessonIds.length;
+        const done = lessonIds.filter((id) => progress[id]?.viewed).length;
+        const complete = Boolean(progress.__completionReported);
         scorm.setProgress(done, lessonIds.length);
         scorm.setCompletion(complete);
       }
@@ -253,6 +325,9 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
 
       function readActivityInput(activity) {
         if (activity.matches('[data-activity="reflection"]')) {
+          if (activity.dataset.scormInteractionId) {
+            return { response: activity.querySelector('[data-reflection-option]:checked')?.value || '' };
+          }
           return {
             checked: [...activity.querySelectorAll('[data-reflection-option]')]
               .map((input, index) => input.checked ? index : -1)
@@ -288,6 +363,12 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
       function restoreActivityInput(activity, input) {
         if (!input) return;
         if (activity.matches('[data-activity="reflection"]')) {
+          if (activity.dataset.scormInteractionId) {
+            activity.querySelectorAll('[data-reflection-option]').forEach((option) => {
+              option.checked = option.value === input.response;
+            });
+            return;
+          }
           activity.querySelectorAll('[data-reflection-option]').forEach((checkbox, index) => {
             checkbox.checked = input.checked?.includes(index) || false;
           });
@@ -310,6 +391,7 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
 
       function freeformActivityComplete(activity) {
         if (activity.matches('[data-activity="reflection"]')) {
+          if (activity.dataset.scormInteractionId) return null;
           return Boolean(activity.querySelector('[data-reflection-option]:checked'));
         }
         if (activity.matches('[data-activity="reflectionText"]')) {
@@ -357,13 +439,11 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
       function updateLessonCompletion(progress = readProgress()) {
         if (!currentLessonId) return progress;
         const lesson = ensureLesson(progress, currentLessonId);
-        const complete = lesson.viewed && requiredActivities().every((activity, index) => {
-          const id = activityId(activity, index);
-          return lesson.activities[id] || activity.dataset.activityComplete === 'true';
-        });
+        const complete = lesson.viewed;
         if (complete && !lesson.complete) lesson.completedAt = new Date().toISOString();
         lesson.complete = complete;
         if (!complete) delete lesson.completedAt;
+        progress.__requirementsMet = lessonIds.length > 0 && lessonIds.every((id) => progress[id]?.viewed);
         return progress;
       }
 
@@ -418,6 +498,26 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
       document.addEventListener('click', (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
+        const link = target.closest('a[href]');
+        if (!link || link.target === '_blank') return;
+        try {
+          const destination = new URL(link.href, window.location.href);
+          if (destination.origin === window.location.origin) internalNavigation = true;
+        } catch {}
+      }, true);
+
+      document.querySelector('[data-exit-course]')?.addEventListener('click', () => {
+        explicitExit = true;
+        finalizeScormSession();
+        window.close();
+        document.querySelector('[data-exit-status]')?.classList.remove('hidden');
+      });
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const tab = target.closest('[data-tab]');
+        if (tab) activateTab(tab);
         const option = target.closest('[data-option]');
         if (option) {
           const group = option.closest('[data-interaction]');
@@ -450,9 +550,20 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
           feedbackCopy.innerHTML = '';
           const feedbackItems = ok ? readJsonArray(group.getAttribute('data-full-feedback')) : ['Please try again.'];
           feedbackItems.forEach((item) => {
-            const p = document.createElement('p');
-            p.textContent = item;
-            feedbackCopy.appendChild(p);
+            if (item && typeof item === 'object' && item.type === 'list' && Array.isArray(item.items)) {
+              const list = document.createElement('ul');
+              list.className = 'ml-6 list-disc space-y-1';
+              item.items.forEach((entry) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = entry;
+                list.appendChild(listItem);
+              });
+              feedbackCopy.appendChild(list);
+            } else {
+              const p = document.createElement('p');
+              p.textContent = String(item);
+              feedbackCopy.appendChild(p);
+            }
           });
           const tipCopy = feedback.querySelector('[data-tip-copy]');
           tipCopy.innerHTML = '';
@@ -471,51 +582,124 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
         if (matchCheck) {
           const group = matchCheck.closest('[data-matching]');
           let allCorrect = true;
+          let incorrectCount = 0;
           group.querySelectorAll('[data-match-row]').forEach((row) => {
             const select = row.querySelector('select');
             const correct = row.getAttribute('data-answer');
             const ok = select.value === correct;
+            const status = row.querySelector('[data-match-status]');
             row.classList.toggle('border-green-700', ok);
             row.classList.toggle('border-tfgRed', !ok);
-            if (!ok) allCorrect = false;
+            select.setAttribute('aria-invalid', ok ? 'false' : 'true');
+            status.textContent = ok ? 'Correct' : 'Needs correction';
+            status.classList.remove('hidden', 'text-green-700', 'text-tfgRed');
+            status.classList.add(ok ? 'text-green-700' : 'text-tfgRed');
+            if (!ok) {
+              allCorrect = false;
+              incorrectCount += 1;
+            }
           });
           const feedback = group.querySelector('[data-match-feedback]');
-          const feedbackText = allCorrect ? group.getAttribute('data-match-feedback-text') : 'Good try, try again.';
-          feedback.textContent = feedbackText || '';
-          feedback.classList.toggle('hidden', !feedbackText);
+          const customSuccess = group.getAttribute('data-match-feedback-text');
+          const feedbackText = allCorrect
+            ? customSuccess || 'All matches are correct. Activity complete.'
+            : `${incorrectCount} ${incorrectCount === 1 ? 'selection needs' : 'selections need'} correction. Review the marked rows and try again.`;
+          feedback.textContent = feedbackText;
+          feedback.classList.remove('hidden', 'border-green-700', 'border-tfgRed');
+          feedback.classList.add(allCorrect ? 'border-green-700' : 'border-tfgRed');
           setActivityComplete(group, allCorrect);
         }
+      });
+      document.addEventListener('keydown', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element) || !target.matches('[data-tab]')) return;
+        const tabs = [...target.closest('[data-tabs]').querySelectorAll('[data-tab]')];
+        const current = tabs.indexOf(target);
+        let next = current;
+        if (event.key === 'ArrowRight') next = (current + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = tabs.length - 1;
+        else return;
+        event.preventDefault();
+        activateTab(tabs[next]);
+        tabs[next].focus();
       });
       document.addEventListener('input', (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
         const activity = target.closest('[data-activity="reflection"], [data-activity="reflectionText"], [data-activity="checklist"]');
-        if (activity) evaluateFreeformActivity(activity);
+        if (activity && !activity.dataset.scormInteractionId) evaluateFreeformActivity(activity);
       });
       document.addEventListener('change', (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
         const activity = target.closest('[data-activity="reflection"], [data-activity="reflectionText"], [data-activity="checklist"]');
-        if (activity) evaluateFreeformActivity(activity);
+        if (activity?.dataset.scormInteractionId && target.matches('[data-reflection-option]')) {
+          persistActivityInput(activity);
+          scorm.recordSurveyInteraction(
+            activity.dataset.scormInteractionId,
+            activity.dataset.scormInteractionDescription || '',
+            target.value,
+          );
+          scorm.commit();
+        } else if (activity) {
+          evaluateFreeformActivity(activity);
+        }
         const matching = target.closest('[data-activity="matching"]');
-        if (matching && target.matches('select')) persistActivityInput(matching, true);
+        if (matching && target.matches('select')) {
+          const row = target.closest('[data-match-row]');
+          row?.classList.remove('border-green-700', 'border-tfgRed');
+          target.removeAttribute('aria-invalid');
+          const status = row?.querySelector('[data-match-status]');
+          if (status) {
+            status.textContent = '';
+            status.classList.add('hidden');
+          }
+          const feedback = matching.querySelector('[data-match-feedback]');
+          feedback?.classList.add('hidden');
+          persistActivityInput(matching, true);
+        }
       });
-      window.addEventListener('pagehide', () => {
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState !== 'hidden' || explicitExit) return;
         const progress = readProgress();
         if (currentLessonId) updateLessonCompletion(progress);
         const serialized = JSON.stringify(progress);
         localStorage.setItem(key, serialized);
-        scorm.setSuspendData(serialized);
+        scorm.setSuspendData(serializeScormProgress(progress));
         if (currentLessonId) scorm.setLocation(currentLessonId);
         syncScormCompletion(progress);
         scorm.commit();
-        scorm.terminate();
+      });
+      window.addEventListener('pagehide', () => {
+        if (explicitExit) return;
+        if (internalNavigation) {
+          saveAndTerminate(false);
+        } else {
+          finalizeScormSession();
+        }
       });
       initializeCurrentLesson();
       renderProgress();
 
       function isQuizOptionSelected(option) {
         return option?.getAttribute('aria-pressed') === 'true';
+      }
+
+      function activateTab(tab) {
+        const group = tab?.closest('[data-tabs]');
+        if (!group) return;
+        group.querySelectorAll('[data-tab]').forEach((item) => {
+          const selected = item === tab;
+          item.setAttribute('aria-selected', selected ? 'true' : 'false');
+          item.setAttribute('tabindex', selected ? '0' : '-1');
+          item.classList.toggle('bg-ink', selected);
+          item.classList.toggle('text-white', selected);
+        });
+        group.querySelectorAll('[data-tab-panel]').forEach((panel) => {
+          panel.hidden = panel.id !== tab.getAttribute('aria-controls');
+        });
       }
 
       function setQuizOptionSelected(option, selected) {
@@ -548,6 +732,42 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
           return [];
         }
       }
+
+      function saveAndTerminate(reportCompletion) {
+        const progress = readProgress();
+        if (currentLessonId) updateLessonCompletion(progress);
+        if (reportCompletion && progress.__requirementsMet) progress.__completionReported = true;
+        const serialized = JSON.stringify(progress);
+        localStorage.setItem(key, serialized);
+        scorm.setSuspendData(serializeScormProgress(progress));
+        if (currentLessonId) scorm.setLocation(currentLessonId);
+        syncScormCompletion(progress);
+        scorm.setExit(Boolean(progress.__completionReported));
+        scorm.commit();
+        scorm.terminate();
+      }
+
+      function finalizeScormSession() {
+        saveAndTerminate(true);
+      }
     </script>
   </body>
 </html>
+
+<style>
+  .course-banner-image {
+    object-position: var(--banner-position-mobile);
+  }
+
+  @media (min-width: 768px) {
+    .course-banner-image {
+      object-position: var(--banner-position-tablet);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .course-banner-image {
+      object-position: var(--banner-position-desktop);
+    }
+  }
+</style>

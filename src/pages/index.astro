@@ -2,7 +2,7 @@
 import CourseLayout from '../layouts/CourseLayout.astro';
 import { courseOverview, courseTitle, lessons } from '../data/course.js';
 ---
-<CourseLayout title={courseTitle} bannerImage="/images/banners/landing.jpg" bannerPosition="center 42%">
+<CourseLayout title={courseTitle} bannerImage="/images/banners/landing.jpg" bannerPosition="center 42%" bannerPositionTablet="center 42%" bannerPositionMobile="80% 42%">
   <Fragment slot="hero">
     <h1 class="mt-4 max-w-3xl text-4xl font-black leading-tight md:text-6xl">{courseTitle}</h1>
     <p class="mt-4 max-w-2xl text-lg leading-8 text-white/75">A practical guide for responding to possible misconduct with facts, fairness and the right level of support.</p>
@@ -12,6 +12,7 @@ import { courseOverview, courseTitle, lessons } from '../data/course.js';
       <article class="course-block p-7 md:p-10">
         <p class="text-xs font-bold uppercase tracking-[0.22em] text-tfgRed">Home</p>
         <h2 class="mt-3 text-3xl font-black">Course Overview</h2>
+        <p class="mt-4 max-w-3xl text-lg leading-8 text-graphite">Every manager faces difficult decisions when workplace conduct concerns arise. This course helps you respond with facts, fairness and the right level of support.</p>
         <div class="overview-grid mt-8 grid gap-6 md:grid-cols-2">
           {courseOverview.map((item) => (
             <div class="tone-chip p-6">
