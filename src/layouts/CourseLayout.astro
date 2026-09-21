@@ -6,7 +6,7 @@ import { courseTitle, lessons } from '../data/course.js';
 const {
   title = courseTitle,
   currentId = '',
-  bannerImage = '/images/banners/landing.jpg',
+  bannerImage = '/images/banners/landing.png',
   bannerPosition = 'center center',
   bannerPositionTablet = bannerPosition,
   bannerPositionMobile = bannerPosition,
@@ -83,8 +83,8 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
           <div class="relative mx-auto max-w-5xl px-5 py-14 lg:px-10 lg:py-20">
             <div class="flex flex-wrap items-center gap-3 text-sm text-white/80">
               <BookOpen size={18} />
-              <span>Employee Relations</span>
-              {currentIndex >= 0 && <span>Lesson {lessons[currentIndex].number} of 7</span>}
+              <span>{courseTitle}</span>
+              {currentIndex >= 0 && <span>Lesson {lessons[currentIndex].number} of {lessons.length - 1}</span>}
             </div>
             <slot name="hero" />
           </div>
@@ -93,8 +93,8 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
       </main>
     </div>
     <script>
-      const key = 'er-abridge-progress';
-      const completionMode = 'scorm-visit-v2';
+      const key = 'regulatory-foundations-tfg-insure-progress';
+      const completionMode = 'regulatory-foundations-visit-v1';
       const lessonIds = JSON.parse(document.documentElement.dataset.lessonIds || '[]');
       const currentLessonId = document.documentElement.dataset.currentLesson || '';
       let internalNavigation = false;
@@ -545,10 +545,10 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
           });
           const feedback = group.querySelector('[data-feedback]');
           feedback.classList.remove('hidden');
-          feedback.querySelector('[data-result]').textContent = ok ? 'Correct' : 'Good try';
+          feedback.querySelector('[data-result]').textContent = '';
           const feedbackCopy = feedback.querySelector('[data-feedback-copy]');
           feedbackCopy.innerHTML = '';
-          const feedbackItems = ok ? readJsonArray(group.getAttribute('data-full-feedback')) : ['Please try again.'];
+          const feedbackItems = readJsonArray(group.getAttribute(ok ? 'data-correct-feedback' : 'data-incorrect-feedback'));
           feedbackItems.forEach((item) => {
             if (item && typeof item === 'object' && item.type === 'list' && Array.isArray(item.items)) {
               const list = document.createElement('ul');
@@ -600,10 +600,11 @@ const currentIndex = lessons.findIndex((lesson) => lesson.id === currentId);
             }
           });
           const feedback = group.querySelector('[data-match-feedback]');
-          const customSuccess = group.getAttribute('data-match-feedback-text');
+          const customSuccess = group.getAttribute('data-match-correct-feedback');
+          const customIncorrect = group.getAttribute('data-match-incorrect-feedback');
           const feedbackText = allCorrect
             ? customSuccess || 'All matches are correct. Activity complete.'
-            : `${incorrectCount} ${incorrectCount === 1 ? 'selection needs' : 'selections need'} correction. Review the marked rows and try again.`;
+            : customIncorrect || `${incorrectCount} ${incorrectCount === 1 ? 'selection needs' : 'selections need'} correction. Review the marked rows and try again.`;
           feedback.textContent = feedbackText;
           feedback.classList.remove('hidden', 'border-green-700', 'border-tfgRed');
           feedback.classList.add(allCorrect ? 'border-green-700' : 'border-tfgRed');

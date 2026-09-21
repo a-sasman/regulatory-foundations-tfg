@@ -4,7 +4,7 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot = Split-Path -Parent $scriptRoot
 $distPath = Join-Path $projectRoot 'dist'
 $stagingPath = Join-Path $projectRoot 'scorm-package'
-$zipPath = Join-Path $projectRoot 'ER-Abridge-SCORM-1.2.zip'
+$zipPath = Join-Path $projectRoot 'Regulatory-Foundations-TFG-Insure-SCORM-1.2.zip'
 $manifestPath = Join-Path $projectRoot 'scorm\imsmanifest.xml'
 
 if (-not (Test-Path -LiteralPath (Join-Path $distPath 'index.html'))) {

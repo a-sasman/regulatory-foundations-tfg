@@ -11,7 +11,7 @@ const { lesson } = Astro.props;
 const index = lessons.findIndex((item) => item.id === lesson.id);
 const previous = lessons[index - 1];
 const next = lessons[index + 1];
-const bannerImage = `/images/banners/lesson-${lesson.number}.jpg`;
+const bannerImage = `/images/banners/lesson-${lesson.number}.png`;
 const bannerPositions = {
   0: { desktop: 'center 48%', tablet: 'center 48%', mobile: 'center 48%' },
   1: { desktop: 'center 46%', tablet: 'center 46%', mobile: '55% 46%' },
@@ -19,8 +19,6 @@ const bannerPositions = {
   3: { desktop: 'center 62%', tablet: 'center 62%', mobile: 'center 62%' },
   4: { desktop: 'center 48%', tablet: 'center 48%', mobile: 'center 48%' },
   5: { desktop: 'center 64%', tablet: 'center 64%', mobile: 'center 64%' },
-  6: { desktop: 'center 46%', tablet: 'center 46%', mobile: '140% 46%' },
-  7: { desktop: 'center 45%', tablet: 'center 45%', mobile: 'center 45%' },
 };
 const bannerPosition = bannerPositions[lesson.number] ?? { desktop: 'center center', tablet: 'center center', mobile: 'center center' };
 ---

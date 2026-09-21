@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest identifier="ER_ABRIDGE_SCORM_12" version="1.0"
+<manifest identifier="REGULATORY_FOUNDATIONS_TFG_INSURE_SCORM_12" version="1.0"
   xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2"
   xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -10,16 +10,16 @@
     <schema>ADL SCORM</schema>
     <schemaversion>1.2</schemaversion>
   </metadata>
-  <organizations default="ER_ABRIDGE_ORG">
-    <organization identifier="ER_ABRIDGE_ORG">
-      <title>ER Abridged: What To Do When Misconduct Happens</title>
-      <item identifier="ER_ABRIDGE_ITEM" identifierref="ER_ABRIDGE_RESOURCE" isvisible="true">
-        <title>ER Abridged: What To Do When Misconduct Happens</title>
+  <organizations default="REGULATORY_FOUNDATIONS_TFG_INSURE_ORG">
+    <organization identifier="REGULATORY_FOUNDATIONS_TFG_INSURE_ORG">
+      <title>Regulatory Foundations for TFG Insure Employees</title>
+      <item identifier="REGULATORY_FOUNDATIONS_TFG_INSURE_ITEM" identifierref="REGULATORY_FOUNDATIONS_TFG_INSURE_RESOURCE" isvisible="true">
+        <title>Regulatory Foundations for TFG Insure Employees</title>
       </item>
     </organization>
   </organizations>
   <resources>
-    <resource identifier="ER_ABRIDGE_RESOURCE" type="webcontent" adlcp:scormtype="sco" href="index.html">
+    <resource identifier="REGULATORY_FOUNDATIONS_TFG_INSURE_RESOURCE" type="webcontent" adlcp:scormtype="sco" href="index.html">
       <file href="index.html" />
     </resource>
   </resources>
