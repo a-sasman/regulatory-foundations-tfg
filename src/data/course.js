@@ -76,7 +76,7 @@ export const lessons = [
         type: 'video',
         title: 'Video 1: Understanding TFG Insure as a Financial Services Provider',
         src: '/videos/understanding-tfg-insure-fsp.mp4',
-        available: false,
+        available: true,
       },
     ],
   },
@@ -221,7 +221,7 @@ export const lessons = [
         ],
         videoTitle: 'Video 2: Treating Customers Fairly (TCF)',
         src: '/videos/treating-customers-fairly.mp4',
-        available: false,
+        available: true,
       },
       {
         type: 'cards',

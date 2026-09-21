@@ -356,7 +356,7 @@ const isPillCards = block.layout === 'pills';
     {block.copy && <RichText items={block.copy} className={`mt-4 space-y-3 leading-7 ${bodyClass}`} />}
     {block.videoTitle && <h3 class={`mt-6 text-lg font-black ${titleClass}`}>{block.videoTitle}</h3>}
     {block.available ? (
-      <video class="mt-5 w-full rounded bg-ink" controls preload="metadata">
+      <video class="mt-5 aspect-video w-full rounded bg-ink object-contain" controls preload="metadata">
         <source src={block.src} type="video/mp4" />
       </video>
     ) : (
