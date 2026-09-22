@@ -424,6 +424,8 @@ export const lessons = [
       {
         type: 'mediaPlaceholder',
         title: 'Vantage',
+        src: '/images/vantage.png',
+        alt: 'Vantage dashboard showing quick actions and outstanding actions',
         message: 'Vantage image to be added',
       },
       {

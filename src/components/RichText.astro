@@ -1,11 +1,13 @@
 ---
-const { items = [], className = '' } = Astro.props;
+const { items = [], className = '', boldItems = [], plainBoldItems = [], prominentItems = [] } = Astro.props;
 const content = Array.isArray(items) ? items : items ? [items] : [];
 ---
 <div class={className}>
   {content.map((item) => (
     typeof item === 'string'
-      ? <p>{item}</p>
+      ? prominentItems.includes(item)
+        ? <p class="text-base font-black text-tfgRed">{item}</p>
+        : <p>{boldItems.includes(item) ? <strong class="text-base font-bold text-tfgRed">{item}</strong> : plainBoldItems.includes(item) ? <strong class="font-bold">{item}</strong> : item}</p>
       : item?.type === 'list'
         ? <ul class="ml-6 list-disc space-y-1">{item.items.map((entry) => <li>{entry}</li>)}</ul>
         : null
